@@ -192,6 +192,16 @@
                 defaultModelsExpandDepth: 1,
                 defaultModelExpandDepth: 1,
                 docExpansion: "list",
+                requestInterceptor: (request) => {
+                    console.log('Request interceptor called:', request.url);
+                    if (currentToken) {
+                        console.log('Adding token to request:', currentToken.substring(0, 50) + '...');
+                        request.headers['Authorization'] = `Bearer ${currentToken}`;
+                    } else {
+                        console.log('No token available for request');
+                    }
+                    return request;
+                },
                 onComplete: function(swaggerApi, swaggerUi) {
                     console.log("Rejintech Swagger UI 로드 완료");
                     
@@ -274,8 +284,42 @@
         }
         
         function setSwaggerAuth(token) {
-            if (swaggerUI && swaggerUI.preauthorizeApiKey) {
-                swaggerUI.preauthorizeApiKey('bearerAuth', `Bearer ${token}`);
+            console.log('Setting Swagger auth token:', token ? token.substring(0, 50) + '...' : 'null');
+            
+            if (swaggerUI) {
+                if (swaggerUI.preauthorizeApiKey) {
+                    console.log('Using preauthorizeApiKey method');
+                    swaggerUI.preauthorizeApiKey('bearerAuth', `Bearer ${token}`);
+                } else {
+                    console.log('preauthorizeApiKey not available, trying alternative method');
+                    // 대안 방법: requestInterceptor 사용
+                    const ui = swaggerUI.getConfigs();
+                    if (ui && ui.requestInterceptor) {
+                        console.log('Using requestInterceptor');
+                    }
+                }
+                
+                // 추가 확인: Swagger UI 인스턴스에 직접 인증 정보 설정
+                try {
+                    const authActions = swaggerUI.authActions;
+                    if (authActions && authActions.authorize) {
+                        console.log('Using authActions.authorize');
+                        authActions.authorize({
+                            bearerAuth: {
+                                name: 'bearerAuth',
+                                schema: {
+                                    type: 'http',
+                                    scheme: 'bearer'
+                                },
+                                value: `Bearer ${token}`
+                            }
+                        });
+                    }
+                } catch (e) {
+                    console.warn('authActions method failed:', e);
+                }
+            } else {
+                console.warn('SwaggerUI instance not available');
             }
         }
         

@@ -172,7 +172,7 @@
       }
     },
     "/api/auth/verify": {
-      "post": {
+      "get": {
         "tags": ["인증"],
         "summary": "토큰 검증",
         "description": "JWT 토큰의 유효성을 검증합니다",

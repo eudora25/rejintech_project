@@ -90,9 +90,20 @@ class Auth extends CI_Controller
     private function verify_jwt_token($token)
     {
         try {
+            log_message('debug', 'JWT Verification - Token to verify: ' . substr($token, 0, 50) . '...');
+            log_message('debug', 'JWT Verification - Secret key length: ' . strlen($this->jwt_secret));
+            log_message('debug', 'JWT Verification - Algorithm: ' . $this->jwt_algorithm);
+            
             $decoded = JWT::decode($token, new Key($this->jwt_secret, $this->jwt_algorithm));
-            return (array) $decoded;
+            $decoded_array = (array) $decoded;
+            
+            log_message('debug', 'JWT Verification - Decode SUCCESS');
+            log_message('debug', 'JWT Verification - Decoded data: ' . json_encode($decoded_array));
+            
+            return $decoded_array;
         } catch (Exception $e) {
+            log_message('debug', 'JWT Verification - Decode FAILED: ' . $e->getMessage());
+            log_message('debug', 'JWT Verification - Exception class: ' . get_class($e));
             return false;
         }
     }
@@ -334,7 +345,18 @@ class Auth extends CI_Controller
      */
     public function verify()
     {
+        // 디버깅을 위한 헤더 정보 로그
+        $headers = $this->input->request_headers();
+        log_message('debug', 'Verify endpoint - Headers: ' . json_encode($headers));
+        
         $token = $this->get_token_from_header();
+        
+        // 디버깅을 위한 토큰 정보 로그
+        log_message('debug', 'Verify endpoint - Token extracted: ' . ($token ? 'YES' : 'NO'));
+        if ($token) {
+            log_message('debug', 'Verify endpoint - Token length: ' . strlen($token));
+            log_message('debug', 'Verify endpoint - Token first 50 chars: ' . substr($token, 0, 50));
+        }
         
         if (!$token) {
             $this->output
@@ -347,6 +369,12 @@ class Auth extends CI_Controller
         }
 
         $user_data = $this->verify_jwt_token($token);
+
+        // 디버깅을 위한 검증 결과 로그
+        log_message('debug', 'Verify endpoint - Token validation: ' . ($user_data ? 'SUCCESS' : 'FAILED'));
+        if (!$user_data) {
+            log_message('debug', 'Verify endpoint - JWT verification failed');
+        }
 
         if (!$user_data) {
             $this->output

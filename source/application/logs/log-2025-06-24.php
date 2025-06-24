@@ -826,3 +826,167 @@ INFO - 2025-06-24 06:58:28 --> Session: Class initialized using 'files' driver.
 INFO - 2025-06-24 06:58:28 --> Controller Class Initialized
 INFO - 2025-06-24 06:58:28 --> Final output sent to browser
 DEBUG - 2025-06-24 06:58:28 --> Total execution time: 0.0076
+INFO - 2025-06-24 07:00:26 --> Config Class Initialized
+INFO - 2025-06-24 07:00:26 --> Hooks Class Initialized
+DEBUG - 2025-06-24 07:00:26 --> UTF-8 Support Enabled
+INFO - 2025-06-24 07:00:26 --> Utf8 Class Initialized
+INFO - 2025-06-24 07:00:26 --> URI Class Initialized
+INFO - 2025-06-24 07:00:26 --> Router Class Initialized
+INFO - 2025-06-24 07:00:26 --> Output Class Initialized
+INFO - 2025-06-24 07:00:26 --> Security Class Initialized
+DEBUG - 2025-06-24 07:00:26 --> Global POST, GET and COOKIE data sanitized
+INFO - 2025-06-24 07:00:26 --> Input Class Initialized
+INFO - 2025-06-24 07:00:26 --> Language Class Initialized
+INFO - 2025-06-24 07:00:26 --> Loader Class Initialized
+INFO - 2025-06-24 07:00:26 --> Helper loaded: url_helper
+INFO - 2025-06-24 07:00:26 --> Helper loaded: form_helper
+INFO - 2025-06-24 07:00:26 --> Helper loaded: html_helper
+INFO - 2025-06-24 07:00:26 --> Database Driver Class Initialized
+INFO - 2025-06-24 07:00:26 --> Session: Class initialized using 'files' driver.
+INFO - 2025-06-24 07:00:26 --> Controller Class Initialized
+DEBUG - 2025-06-24 07:00:26 --> Config file loaded: /var/www/html/application/config/jwt.php
+INFO - 2025-06-24 07:00:26 --> Model Class Initialized
+INFO - 2025-06-24 07:00:26 --> Model Class Initialized
+INFO - 2025-06-24 07:00:26 --> Model Class Initialized
+INFO - 2025-06-24 07:00:26 --> Final output sent to browser
+DEBUG - 2025-06-24 07:00:26 --> Total execution time: 0.0711
+INFO - 2025-06-24 07:00:35 --> Config Class Initialized
+INFO - 2025-06-24 07:00:35 --> Hooks Class Initialized
+DEBUG - 2025-06-24 07:00:35 --> UTF-8 Support Enabled
+INFO - 2025-06-24 07:00:35 --> Utf8 Class Initialized
+INFO - 2025-06-24 07:00:35 --> URI Class Initialized
+INFO - 2025-06-24 07:00:35 --> Router Class Initialized
+INFO - 2025-06-24 07:00:35 --> Output Class Initialized
+INFO - 2025-06-24 07:00:35 --> Security Class Initialized
+DEBUG - 2025-06-24 07:00:35 --> Global POST, GET and COOKIE data sanitized
+INFO - 2025-06-24 07:00:35 --> Input Class Initialized
+INFO - 2025-06-24 07:00:35 --> Language Class Initialized
+INFO - 2025-06-24 07:00:35 --> Loader Class Initialized
+INFO - 2025-06-24 07:00:35 --> Helper loaded: url_helper
+INFO - 2025-06-24 07:00:35 --> Helper loaded: form_helper
+INFO - 2025-06-24 07:00:35 --> Helper loaded: html_helper
+INFO - 2025-06-24 07:00:35 --> Database Driver Class Initialized
+INFO - 2025-06-24 07:00:35 --> Session: Class initialized using 'files' driver.
+INFO - 2025-06-24 07:00:35 --> Controller Class Initialized
+DEBUG - 2025-06-24 07:00:35 --> Config file loaded: /var/www/html/application/config/jwt.php
+INFO - 2025-06-24 07:00:35 --> Model Class Initialized
+INFO - 2025-06-24 07:00:35 --> Model Class Initialized
+INFO - 2025-06-24 07:00:35 --> Model Class Initialized
+INFO - 2025-06-24 07:00:35 --> Final output sent to browser
+DEBUG - 2025-06-24 07:00:35 --> Total execution time: 0.0084
+INFO - 2025-06-24 07:01:21 --> Config Class Initialized
+INFO - 2025-06-24 07:01:21 --> Hooks Class Initialized
+DEBUG - 2025-06-24 07:01:21 --> UTF-8 Support Enabled
+INFO - 2025-06-24 07:01:21 --> Utf8 Class Initialized
+INFO - 2025-06-24 07:01:21 --> URI Class Initialized
+INFO - 2025-06-24 07:01:21 --> Router Class Initialized
+INFO - 2025-06-24 07:01:21 --> Output Class Initialized
+INFO - 2025-06-24 07:01:21 --> Security Class Initialized
+DEBUG - 2025-06-24 07:01:21 --> Global POST, GET and COOKIE data sanitized
+INFO - 2025-06-24 07:01:21 --> Input Class Initialized
+INFO - 2025-06-24 07:01:21 --> Language Class Initialized
+INFO - 2025-06-24 07:01:21 --> Loader Class Initialized
+INFO - 2025-06-24 07:01:21 --> Helper loaded: url_helper
+INFO - 2025-06-24 07:01:21 --> Helper loaded: form_helper
+INFO - 2025-06-24 07:01:21 --> Helper loaded: html_helper
+INFO - 2025-06-24 07:01:21 --> Database Driver Class Initialized
+INFO - 2025-06-24 07:01:21 --> Session: Class initialized using 'files' driver.
+INFO - 2025-06-24 07:01:21 --> Controller Class Initialized
+DEBUG - 2025-06-24 07:01:21 --> Config file loaded: /var/www/html/application/config/jwt.php
+INFO - 2025-06-24 07:01:21 --> Model Class Initialized
+INFO - 2025-06-24 07:01:21 --> Model Class Initialized
+INFO - 2025-06-24 07:01:21 --> Model Class Initialized
+INFO - 2025-06-24 07:01:21 --> Final output sent to browser
+DEBUG - 2025-06-24 07:01:21 --> Total execution time: 0.0706
+INFO - 2025-06-24 07:01:31 --> Config Class Initialized
+INFO - 2025-06-24 07:01:31 --> Hooks Class Initialized
+DEBUG - 2025-06-24 07:01:31 --> UTF-8 Support Enabled
+INFO - 2025-06-24 07:01:31 --> Utf8 Class Initialized
+INFO - 2025-06-24 07:01:31 --> URI Class Initialized
+INFO - 2025-06-24 07:01:31 --> Router Class Initialized
+INFO - 2025-06-24 07:01:31 --> Output Class Initialized
+INFO - 2025-06-24 07:01:31 --> Security Class Initialized
+DEBUG - 2025-06-24 07:01:31 --> Global POST, GET and COOKIE data sanitized
+INFO - 2025-06-24 07:01:31 --> Input Class Initialized
+INFO - 2025-06-24 07:01:31 --> Language Class Initialized
+INFO - 2025-06-24 07:01:31 --> Loader Class Initialized
+INFO - 2025-06-24 07:01:31 --> Helper loaded: url_helper
+INFO - 2025-06-24 07:01:31 --> Helper loaded: form_helper
+INFO - 2025-06-24 07:01:31 --> Helper loaded: html_helper
+INFO - 2025-06-24 07:01:31 --> Database Driver Class Initialized
+INFO - 2025-06-24 07:01:31 --> Session: Class initialized using 'files' driver.
+INFO - 2025-06-24 07:01:31 --> Controller Class Initialized
+DEBUG - 2025-06-24 07:01:31 --> Config file loaded: /var/www/html/application/config/jwt.php
+INFO - 2025-06-24 07:01:31 --> Model Class Initialized
+INFO - 2025-06-24 07:01:31 --> Model Class Initialized
+INFO - 2025-06-24 07:01:31 --> Model Class Initialized
+DEBUG - 2025-06-24 07:01:31 --> Verify endpoint - Headers: {"Authorization":"Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJyZWppbnRlY2giLCJhdWQiOiJyZWppbnRlY2hfdXNlcnMiLCJpYXQiOjE3NTA3NDg0ODEsImV4cCI6MTc1MDc1MjA4MSwidXNlcl9pZCI6IjEiLCJ1c2VybmFtZSI6ImFkbWluIiwiZW1haWwiOiJhZG1pbkBleGFtcGxlLmNvbSJ9.Ka7Ill_0Yy4Cp5bBpEjLu216tct3lU8VKsnZ_M7rAwM","Accept":"*\/*","User-Agent":"curl\/7.68.0","Host":"localhost","Content-Length":"","Content-Type":""}
+DEBUG - 2025-06-24 07:01:31 --> Verify endpoint - Token extracted: YES
+DEBUG - 2025-06-24 07:01:31 --> Verify endpoint - Token length: 265
+DEBUG - 2025-06-24 07:01:31 --> Verify endpoint - Token first 50 chars: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJyZ
+DEBUG - 2025-06-24 07:01:31 --> Verify endpoint - Token validation: SUCCESS
+INFO - 2025-06-24 07:01:31 --> Final output sent to browser
+DEBUG - 2025-06-24 07:01:31 --> Total execution time: 0.0096
+INFO - 2025-06-24 07:02:30 --> Config Class Initialized
+INFO - 2025-06-24 07:02:30 --> Hooks Class Initialized
+DEBUG - 2025-06-24 07:02:30 --> UTF-8 Support Enabled
+INFO - 2025-06-24 07:02:30 --> Utf8 Class Initialized
+INFO - 2025-06-24 07:02:30 --> URI Class Initialized
+INFO - 2025-06-24 07:02:30 --> Router Class Initialized
+INFO - 2025-06-24 07:02:30 --> Output Class Initialized
+INFO - 2025-06-24 07:02:30 --> Security Class Initialized
+DEBUG - 2025-06-24 07:02:30 --> Global POST, GET and COOKIE data sanitized
+INFO - 2025-06-24 07:02:30 --> Input Class Initialized
+INFO - 2025-06-24 07:02:30 --> Language Class Initialized
+INFO - 2025-06-24 07:02:30 --> Loader Class Initialized
+INFO - 2025-06-24 07:02:30 --> Helper loaded: url_helper
+INFO - 2025-06-24 07:02:30 --> Helper loaded: form_helper
+INFO - 2025-06-24 07:02:30 --> Helper loaded: html_helper
+INFO - 2025-06-24 07:02:30 --> Database Driver Class Initialized
+INFO - 2025-06-24 07:02:30 --> Session: Class initialized using 'files' driver.
+INFO - 2025-06-24 07:02:30 --> Controller Class Initialized
+DEBUG - 2025-06-24 07:02:30 --> Config file loaded: /var/www/html/application/config/jwt.php
+INFO - 2025-06-24 07:02:30 --> Model Class Initialized
+INFO - 2025-06-24 07:02:30 --> Model Class Initialized
+INFO - 2025-06-24 07:02:30 --> Model Class Initialized
+DEBUG - 2025-06-24 07:02:30 --> Verify endpoint - Headers: {"Authorization":"Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJyZWppbnRlY2giLCJhdWQiOiJyZWppbnRlY2hfdXNlcnMiLCJpYXQiOjE3NTA3NDg0ODEsImV4cCI6MTc1MDc1MjA4MSwidXNlcl9pZCI6IjEiLCJ1c2VybmFtZSI6ImFkbWluIiwiZW1haWwiOiJhZG1pbkBleGFtcGxlLmNvbSJ9.Ka7Ill_0Yy4Cp5bBpEjLu216tct3lU8VKsnZ_M7rAwM","Accept":"*\/*","User-Agent":"curl\/7.68.0","Host":"localhost","Content-Length":"","Content-Type":""}
+DEBUG - 2025-06-24 07:02:30 --> Verify endpoint - Token extracted: YES
+DEBUG - 2025-06-24 07:02:30 --> Verify endpoint - Token length: 265
+DEBUG - 2025-06-24 07:02:30 --> Verify endpoint - Token first 50 chars: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJyZ
+DEBUG - 2025-06-24 07:02:30 --> Verify endpoint - Token validation: SUCCESS
+INFO - 2025-06-24 07:02:30 --> Final output sent to browser
+DEBUG - 2025-06-24 07:02:30 --> Total execution time: 0.0132
+INFO - 2025-06-24 07:03:28 --> Config Class Initialized
+INFO - 2025-06-24 07:03:28 --> Hooks Class Initialized
+DEBUG - 2025-06-24 07:03:28 --> UTF-8 Support Enabled
+INFO - 2025-06-24 07:03:28 --> Utf8 Class Initialized
+INFO - 2025-06-24 07:03:28 --> URI Class Initialized
+INFO - 2025-06-24 07:03:28 --> Router Class Initialized
+INFO - 2025-06-24 07:03:28 --> Output Class Initialized
+INFO - 2025-06-24 07:03:28 --> Security Class Initialized
+DEBUG - 2025-06-24 07:03:28 --> Global POST, GET and COOKIE data sanitized
+INFO - 2025-06-24 07:03:28 --> Input Class Initialized
+INFO - 2025-06-24 07:03:28 --> Language Class Initialized
+INFO - 2025-06-24 07:03:28 --> Loader Class Initialized
+INFO - 2025-06-24 07:03:28 --> Helper loaded: url_helper
+INFO - 2025-06-24 07:03:28 --> Helper loaded: form_helper
+INFO - 2025-06-24 07:03:28 --> Helper loaded: html_helper
+INFO - 2025-06-24 07:03:28 --> Database Driver Class Initialized
+INFO - 2025-06-24 07:03:28 --> Session: Class initialized using 'files' driver.
+INFO - 2025-06-24 07:03:28 --> Controller Class Initialized
+DEBUG - 2025-06-24 07:03:28 --> Config file loaded: /var/www/html/application/config/jwt.php
+INFO - 2025-06-24 07:03:28 --> Model Class Initialized
+INFO - 2025-06-24 07:03:28 --> Model Class Initialized
+INFO - 2025-06-24 07:03:28 --> Model Class Initialized
+DEBUG - 2025-06-24 07:03:28 --> Verify endpoint - Headers: {"Authorization":"Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJyZWppbnRlY2giLCJhdWQiOiJyZWppbnRlY2hfdXNlcnMiLCJpYXQiOjE3NTA3NDg0ODEsImV4cCI6MTc1MDc1MjA4MSwidXNlcl9pZCI6IjEiLCJ1c2VybmFtZSI6ImFkbWluIiwiZW1haWwiOiJhZG1pbkBleGFtcGxlLmNvbSJ9.Ka7Ill_0Yy4Cp5bBpEjLu216tct3lU8VKsnZ_M7rAwM","Accept":"*\/*","User-Agent":"curl\/7.68.0","Host":"localhost","Content-Length":"","Content-Type":""}
+DEBUG - 2025-06-24 07:03:28 --> Verify endpoint - Token extracted: YES
+DEBUG - 2025-06-24 07:03:28 --> Verify endpoint - Token length: 265
+DEBUG - 2025-06-24 07:03:28 --> Verify endpoint - Token first 50 chars: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJyZ
+DEBUG - 2025-06-24 07:03:28 --> JWT Verification - Token to verify: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJyZ...
+DEBUG - 2025-06-24 07:03:28 --> JWT Verification - Secret key length: 59
+DEBUG - 2025-06-24 07:03:28 --> JWT Verification - Algorithm: HS256
+DEBUG - 2025-06-24 07:03:28 --> JWT Verification - Decode SUCCESS
+DEBUG - 2025-06-24 07:03:28 --> JWT Verification - Decoded data: {"iss":"rejintech","aud":"rejintech_users","iat":1750748481,"exp":1750752081,"user_id":"1","username":"admin","email":"admin@example.com"}
+DEBUG - 2025-06-24 07:03:28 --> Verify endpoint - Token validation: SUCCESS
+INFO - 2025-06-24 07:03:28 --> Final output sent to browser
+DEBUG - 2025-06-24 07:03:28 --> Total execution time: 0.0130
