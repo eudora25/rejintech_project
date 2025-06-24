@@ -708,67 +708,51 @@
       }
     },
     "/api/procurement/delivery-requests": {
-      "get": {
+      "post": {
         "tags": ["조달청"],
         "summary": "조달청 데이터 전체 리스트 조회",
         "description": "조달청 납품요구 데이터를 페이징, 필터링하여 조회합니다",
         "security": [{"bearerAuth": []}],
-        "parameters": [
-          {
-            "name": "page",
-            "in": "query",
-            "description": "페이지 번호",
-            "schema": {"type": "integer", "default": 1}
-          },
-          {
-            "name": "pageSize",
-            "in": "query",
-            "description": "페이지 크기 (최대 100)",
-            "schema": {"type": "integer", "default": 20}
-          },
-          {
-            "name": "exclcProdctYn",
-            "in": "query",
-            "description": "우수제품 여부 (Y/N)",
-            "schema": {"type": "string", "enum": ["Y", "N"]}
-          },
-          {
-            "name": "dlvrReqRcptDate",
-            "in": "query",
-            "description": "납품요구접수일자 (YYYY-MM-DD)",
-            "schema": {"type": "string", "format": "date"}
-          },
-          {
-            "name": "dminsttNm",
-            "in": "query",
-            "description": "수요기관명",
-            "schema": {"type": "string"}
-          },
-          {
-            "name": "corpNm",
-            "in": "query",
-            "description": "업체명",
-            "schema": {"type": "string"}
-          },
-          {
-            "name": "prdctClsfcNoNm",
-            "in": "query",
-            "description": "품명",
-            "schema": {"type": "string"}
-          },
-          {
-            "name": "dateFrom",
-            "in": "query",
-            "description": "시작 날짜",
-            "schema": {"type": "string", "format": "date"}
-          },
-          {
-            "name": "dateTo",
-            "in": "query",
-            "description": "종료 날짜",
-            "schema": {"type": "string", "format": "date"}
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProcurementRequest"
+              },
+              "examples": {
+                "기본 요청": {
+                  "value": {
+                    "filterModel": {
+                      "type": ["CSO"]
+                    },
+                    "sortModel": {
+                      "bizName": "desc"
+                    },
+                    "page": 1,
+                    "size": 50
+                  }
+                },
+                "복합 필터": {
+                  "value": {
+                    "filterModel": {
+                      "type": ["CSO", "MAS"],
+                      "dminsttNm": "서울특별시",
+                      "dateFrom": "2024-01-01",
+                      "dateTo": "2024-12-31"
+                    },
+                    "sortModel": {
+                      "dlvrReqRcptDate": "desc",
+                      "incdecAmt": "desc"
+                    },
+                    "page": 1,
+                    "size": 100
+                  }
+                }
+              }
+            }
           }
-        ],
+        },
         "responses": {
           "200": {
             "description": "조회 성공",
@@ -939,6 +923,63 @@
           }
         }
       },
+      "ProcurementRequest": {
+        "type": "object",
+        "properties": {
+          "filterModel": {
+            "type": "object",
+            "description": "필터 조건",
+            "properties": {
+              "type": {
+                "type": "array",
+                "items": {"type": "string", "enum": ["CSO", "MAS"]},
+                "description": "상품 유형 (CSO: 우수제품, MAS: 일반제품)"
+              },
+              "exclcProdctYn": {"type": "string", "enum": ["Y", "N"], "description": "우수제품 여부"},
+              "dlvrReqRcptDate": {"type": "string", "format": "date", "description": "납품요구접수일자"},
+              "dminsttNm": {"type": "string", "description": "수요기관명"},
+              "dminsttRgnNm": {"type": "string", "description": "수요기관지역명"},
+              "corpNm": {"type": "string", "description": "업체명"},
+              "dlvrReqNm": {"type": "string", "description": "납품요구건명"},
+              "prdctClsfcNoNm": {"type": "string", "description": "품명"},
+              "dtilPrdctClsfcNoNm": {"type": "string", "description": "세부품명"},
+              "prdctIdntNo": {"type": "string", "description": "물품식별번호"},
+              "prdctIdntNoNm": {"type": "string", "description": "물품규격명"},
+              "dminsttCd": {"type": "string", "description": "수요기관코드"},
+              "dateFrom": {"type": "string", "format": "date", "description": "시작 날짜"},
+              "dateTo": {"type": "string", "format": "date", "description": "종료 날짜"},
+              "amountFrom": {"type": "number", "description": "최소 금액"},
+              "amountTo": {"type": "number", "description": "최대 금액"}
+            }
+          },
+          "sortModel": {
+            "type": "object",
+            "description": "정렬 조건",
+            "additionalProperties": {
+              "type": "string",
+              "enum": ["asc", "desc"]
+            },
+            "example": {
+              "bizName": "desc",
+              "dlvrReqRcptDate": "desc"
+            }
+          },
+          "page": {
+            "type": "integer",
+            "minimum": 1,
+            "default": 1,
+            "description": "페이지 번호"
+          },
+          "size": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 100,
+            "default": 50,
+            "description": "페이지 크기"
+          }
+        },
+        "required": ["page", "size"]
+      },
       "ProcurementItem": {
         "type": "object",
         "properties": {
@@ -956,7 +997,9 @@
           "prdctUprc": {"type": "number", "description": "물품단가"},
           "incdecAmt": {"type": "number", "description": "증감금액"},
           "dminsttCd": {"type": "string", "description": "수요기관코드"},
-          "exclcProdctYn": {"type": "string", "enum": ["Y", "N"], "description": "우수제품여부"}
+          "exclcProdctYn": {"type": "string", "enum": ["Y", "N"], "description": "우수제품여부"},
+          "type": {"type": "string", "enum": ["CSO", "MAS"], "description": "상품 유형"},
+          "bizName": {"type": "string", "description": "업체명 (정렬용)"}
         }
       },
       "ProcurementListResponse": {
@@ -968,7 +1011,7 @@
             "type": "object",
             "properties": {
               "page": {"type": "integer", "example": 1},
-              "pageSize": {"type": "integer", "example": 20},
+              "size": {"type": "integer", "example": 50},
               "total": {"type": "integer", "example": 992},
               "jodalTotalAmount": {"type": "number", "example": 456789123.45},
               "masTotalAmount": {"type": "number", "example": 5780440150.55},

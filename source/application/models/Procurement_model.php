@@ -12,10 +12,10 @@ class Procurement_model extends CI_Model {
      * 조달청 데이터 전체 리스트 조회 (API 요구사항에 맞는 형식)
      */
     public function get_delivery_requests($params = []) {
-        // 기본 파라미터 설정
+        // 기본 파라미터 설정 (page, size로 변경)
         $page = isset($params['page']) ? (int)$params['page'] : 1;
-        $pageSize = isset($params['pageSize']) ? (int)$params['pageSize'] : 20;
-        $offset = ($page - 1) * $pageSize;
+        $size = isset($params['size']) ? (int)$params['size'] : 50;
+        $offset = ($page - 1) * $size;
         
         // 기본 쿼리 구성
         $this->db->select("
@@ -33,7 +33,9 @@ class Procurement_model extends CI_Model {
             dri.unit_price as prdctUprc,
             dri.increase_decrease_amount as incdecAmt,
             i.institution_code as dminsttCd,
-            CASE WHEN dr.is_excellent_product THEN 'Y' ELSE 'N' END as exclcProdctYn
+            CASE WHEN dr.is_excellent_product THEN 'Y' ELSE 'N' END as exclcProdctYn,
+            CASE WHEN dr.is_excellent_product THEN 'CSO' ELSE 'MAS' END as type,
+            c.company_name as bizName
         ");
         
         $this->db->from('delivery_request_items dri');
@@ -50,11 +52,11 @@ class Procurement_model extends CI_Model {
         $total_query = clone $this->db;
         $total = $total_query->count_all_results('', FALSE);
         
-        // 정렬 및 페이징
-        $this->db->order_by('dr.delivery_receipt_date', 'DESC');
-        $this->db->order_by('dr.id', 'ASC');
-        $this->db->order_by('dri.sequence_number', 'ASC');
-        $this->db->limit($pageSize, $offset);
+        // 정렬 처리 (sortModel 적용)
+        $this->_apply_sorting($params);
+        
+        // 페이징 적용
+        $this->db->limit($size, $offset);
         
         $data = $this->db->get()->result_array();
         
@@ -66,7 +68,7 @@ class Procurement_model extends CI_Model {
         
         return [
             'page' => $page,
-            'pageSize' => $pageSize,
+            'size' => $size,
             'total' => $total,
             'jodalTotalAmount' => $totals['jodalTotalAmount'],
             'masTotalAmount' => $totals['masTotalAmount'],
@@ -76,6 +78,52 @@ class Procurement_model extends CI_Model {
             'filterCorpNm' => $filters['filterCorpNm'],
             'data' => $data
         ];
+    }
+    
+    /**
+     * 정렬 조건 적용
+     */
+    private function _apply_sorting($params) {
+        if (isset($params['sortModel']) && is_array($params['sortModel'])) {
+            foreach ($params['sortModel'] as $field => $direction) {
+                $direction = strtoupper($direction);
+                if (!in_array($direction, ['ASC', 'DESC'])) {
+                    $direction = 'ASC';
+                }
+                
+                // 필드 매핑
+                switch ($field) {
+                    case 'bizName':
+                        $this->db->order_by('c.company_name', $direction);
+                        break;
+                    case 'dlvrReqRcptDate':
+                        $this->db->order_by('dr.delivery_receipt_date', $direction);
+                        break;
+                    case 'dminsttNm':
+                        $this->db->order_by('i.institution_name', $direction);
+                        break;
+                    case 'corpNm':
+                        $this->db->order_by('c.company_name', $direction);
+                        break;
+                    case 'incdecAmt':
+                        $this->db->order_by('dri.increase_decrease_amount', $direction);
+                        break;
+                    case 'prdctUprc':
+                        $this->db->order_by('dri.unit_price', $direction);
+                        break;
+                    default:
+                        // 기본 정렬
+                        $this->db->order_by('dr.delivery_receipt_date', 'DESC');
+                        $this->db->order_by('dr.id', 'ASC');
+                        break;
+                }
+            }
+        } else {
+            // 기본 정렬
+            $this->db->order_by('dr.delivery_receipt_date', 'DESC');
+            $this->db->order_by('dr.id', 'ASC');
+            $this->db->order_by('dri.sequence_number', 'ASC');
+        }
     }
     
     /**
@@ -123,7 +171,22 @@ class Procurement_model extends CI_Model {
      * 필터 조건 적용
      */
     private function _apply_filters($params, $exclude = []) {
-        // 우수제품 여부 필터
+        // type 필터 (CSO, MAS 등)
+        if (isset($params['types']) && is_array($params['types']) && !in_array('types', $exclude)) {
+            $type_conditions = [];
+            foreach ($params['types'] as $type) {
+                if ($type === 'CSO') {
+                    $type_conditions[] = 'dr.is_excellent_product = 1';
+                } elseif ($type === 'MAS') {
+                    $type_conditions[] = 'dr.is_excellent_product = 0';
+                }
+            }
+            if (!empty($type_conditions)) {
+                $this->db->where('(' . implode(' OR ', $type_conditions) . ')');
+            }
+        }
+        
+        // 우수제품 여부 필터 (기존 호환성 유지)
         if (isset($params['exclcProdctYn']) && !in_array('exclcProdctYn', $exclude)) {
             if ($params['exclcProdctYn'] === 'Y') {
                 $this->db->where('dr.is_excellent_product', 1);

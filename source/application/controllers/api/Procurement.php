@@ -118,11 +118,11 @@ class Procurement extends CI_Controller {
     
     /**
      * 조달청 데이터 전체 리스트 조회 API
-     * GET /api/procurement/delivery-requests
+     * POST /api/procurement/delivery-requests
      */
     public function delivery_requests() {
-        if ($this->input->method() !== 'get') {
-            return $this->output_error('GET 요청만 허용됩니다.', 405);
+        if ($this->input->method() !== 'post') {
+            return $this->output_error('POST 요청만 허용됩니다.', 405);
         }
         
         // 토큰 검증
@@ -130,43 +130,84 @@ class Procurement extends CI_Controller {
         if (!$decoded_token) return; // 에러는 verify_token에서 처리됨
         
         try {
-            // 쿼리 파라미터 가져오기
+            // JSON 요청 데이터 가져오기
+            $json_input = file_get_contents('php://input');
+            $request_data = json_decode($json_input, true);
+            
+            if ($request_data === null) {
+                return $this->output_error('잘못된 JSON 형식입니다.', 400);
+            }
+            
+            // 기본 구조 검증
             $params = [];
             
-            // 페이징 파라미터
-            $params['page'] = $this->input->get('page') ? (int)$this->input->get('page') : 1;
-            $params['pageSize'] = $this->input->get('pageSize') ? (int)$this->input->get('pageSize') : 20;
+            // 페이징 파라미터 (page, size)
+            $params['page'] = isset($request_data['page']) ? (int)$request_data['page'] : 1;
+            $params['size'] = isset($request_data['size']) ? (int)$request_data['size'] : 50;
             
-            // 필터 파라미터들
-            $filter_params = [
-                'exclcProdctYn', 'dlvrReqRcptDate', 'dminsttNm', 'dminsttRgnNm', 
-                'corpNm', 'dlvrReqNm', 'prdctClsfcNoNm', 'dtilPrdctClsfcNoNm',
-                'prdctIdntNo', 'prdctIdntNoNm', 'incdecQty', 'prdctUprc', 
-                'incdecAmt', 'dminsttCd', 'dateFrom', 'dateTo', 'amountFrom', 'amountTo'
-            ];
+            // 페이지 크기 제한
+            if ($params['size'] > 100) {
+                $params['size'] = 100;
+            }
+            if ($params['page'] < 1) {
+                $params['page'] = 1;
+            }
             
-            foreach ($filter_params as $param) {
-                $value = $this->input->get($param);
-                if ($value !== null && $value !== '') {
-                    $params[$param] = $value;
+            // 필터 모델 처리
+            if (isset($request_data['filterModel']) && is_array($request_data['filterModel'])) {
+                $filterModel = $request_data['filterModel'];
+                
+                // type 필터 (배열 형태)
+                if (isset($filterModel['type']) && is_array($filterModel['type'])) {
+                    $params['types'] = $filterModel['type'];
+                }
+                
+                // 기타 필터들
+                $filter_mappings = [
+                    'exclcProdctYn' => 'exclcProdctYn',
+                    'dlvrReqRcptDate' => 'dlvrReqRcptDate', 
+                    'dminsttNm' => 'dminsttNm',
+                    'dminsttRgnNm' => 'dminsttRgnNm',
+                    'corpNm' => 'corpNm',
+                    'dlvrReqNm' => 'dlvrReqNm',
+                    'prdctClsfcNoNm' => 'prdctClsfcNoNm',
+                    'dtilPrdctClsfcNoNm' => 'dtilPrdctClsfcNoNm',
+                    'prdctIdntNo' => 'prdctIdntNo',
+                    'prdctIdntNoNm' => 'prdctIdntNoNm',
+                    'dminsttCd' => 'dminsttCd',
+                    'dateFrom' => 'dateFrom',
+                    'dateTo' => 'dateTo',
+                    'amountFrom' => 'amountFrom',
+                    'amountTo' => 'amountTo'
+                ];
+                
+                foreach ($filter_mappings as $api_key => $db_key) {
+                    if (isset($filterModel[$api_key]) && $filterModel[$api_key] !== '') {
+                        if (is_array($filterModel[$api_key])) {
+                            $params[$db_key] = $filterModel[$api_key];
+                        } else {
+                            $params[$db_key] = $filterModel[$api_key];
+                        }
+                    }
                 }
             }
             
-            // 페이지 크기 제한
-            if ($params['pageSize'] > 100) {
-                $params['pageSize'] = 100;
+            // 정렬 모델 처리
+            if (isset($request_data['sortModel']) && is_array($request_data['sortModel'])) {
+                $sortModel = $request_data['sortModel'];
+                $params['sortModel'] = $sortModel;
             }
             
             // 데이터 조회
             $result = $this->Procurement_model->get_delivery_requests($params);
             
             // API 호출 기록 (임시 제거)
-            // $this->log_api_call('/api/procurement/delivery-requests', 'GET', $decoded_token->user_id);
+            // $this->log_api_call('/api/procurement/delivery-requests', 'POST', $decoded_token->user_id);
             
             $this->output_success($result, '조달청 데이터 조회 성공');
             
         } catch (Exception $e) {
-            // $this->log_api_call('/api/procurement/delivery-requests', 'GET', $decoded_token->user_id ?? null, 'error', $e->getMessage());
+            // $this->log_api_call('/api/procurement/delivery-requests', 'POST', $decoded_token->user_id ?? null, 'error', $e->getMessage());
             return $this->output_error('데이터 조회 중 오류가 발생했습니다: ' . $e->getMessage(), 500);
         }
     }
