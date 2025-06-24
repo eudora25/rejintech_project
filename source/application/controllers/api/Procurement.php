@@ -93,27 +93,39 @@ class Procurement extends CI_Controller {
      * 에러 응답 출력
      */
     private function output_error($message, $status_code = 400) {
-        http_response_code($status_code);
-        echo json_encode([
+        $response = [
             'success' => false,
             'message' => $message,
             'timestamp' => date('c')
-        ], JSON_UNESCAPED_UNICODE);
-        exit();
+        ];
+        
+        $this->output
+            ->set_content_type('application/json', 'utf-8')
+            ->set_status_header($status_code)
+            ->set_output(json_encode($response, JSON_UNESCAPED_UNICODE));
+        
+        // CodeIgniter에서는 exit() 대신 return 사용
+        return;
     }
     
     /**
      * 성공 응답 출력
      */
     private function output_success($data, $message = '성공') {
-        http_response_code(200);
-        echo json_encode([
+        $response = [
             'success' => true,
             'message' => $message,
             'data' => $data,
             'timestamp' => date('c')
-        ], JSON_UNESCAPED_UNICODE);
-        exit();
+        ];
+        
+        $this->output
+            ->set_content_type('application/json', 'utf-8')
+            ->set_status_header(200)
+            ->set_output(json_encode($response, JSON_UNESCAPED_UNICODE));
+        
+        // CodeIgniter에서는 exit() 대신 return 사용
+        return;
     }
     
     /**
