@@ -345,3 +345,120 @@ DEBUG - 2025-06-24 06:28:21 --> Global POST, GET and COOKIE data sanitized
 INFO - 2025-06-24 06:28:21 --> Input Class Initialized
 INFO - 2025-06-24 06:28:21 --> Language Class Initialized
 ERROR - 2025-06-24 06:28:21 --> 404 Page Not Found: Source/test_new_api.html
+INFO - 2025-06-24 06:28:57 --> Config Class Initialized
+INFO - 2025-06-24 06:28:57 --> Hooks Class Initialized
+DEBUG - 2025-06-24 06:28:57 --> UTF-8 Support Enabled
+INFO - 2025-06-24 06:28:57 --> Utf8 Class Initialized
+INFO - 2025-06-24 06:28:57 --> URI Class Initialized
+INFO - 2025-06-24 06:28:57 --> Router Class Initialized
+INFO - 2025-06-24 06:28:57 --> Output Class Initialized
+INFO - 2025-06-24 06:28:57 --> Security Class Initialized
+DEBUG - 2025-06-24 06:28:57 --> Global POST, GET and COOKIE data sanitized
+INFO - 2025-06-24 06:28:57 --> Input Class Initialized
+INFO - 2025-06-24 06:28:57 --> Language Class Initialized
+ERROR - 2025-06-24 06:28:57 --> 404 Page Not Found: Source/api
+INFO - 2025-06-24 06:28:58 --> Config Class Initialized
+INFO - 2025-06-24 06:28:58 --> Hooks Class Initialized
+DEBUG - 2025-06-24 06:28:58 --> UTF-8 Support Enabled
+INFO - 2025-06-24 06:28:58 --> Utf8 Class Initialized
+INFO - 2025-06-24 06:28:58 --> URI Class Initialized
+INFO - 2025-06-24 06:28:58 --> Router Class Initialized
+INFO - 2025-06-24 06:28:58 --> Output Class Initialized
+INFO - 2025-06-24 06:28:58 --> Security Class Initialized
+DEBUG - 2025-06-24 06:28:58 --> Global POST, GET and COOKIE data sanitized
+INFO - 2025-06-24 06:28:58 --> Input Class Initialized
+INFO - 2025-06-24 06:28:58 --> Language Class Initialized
+ERROR - 2025-06-24 06:28:58 --> 404 Page Not Found: Source/api
+INFO - 2025-06-24 06:29:20 --> Config Class Initialized
+INFO - 2025-06-24 06:29:20 --> Hooks Class Initialized
+DEBUG - 2025-06-24 06:29:20 --> UTF-8 Support Enabled
+INFO - 2025-06-24 06:29:20 --> Utf8 Class Initialized
+INFO - 2025-06-24 06:29:20 --> URI Class Initialized
+INFO - 2025-06-24 06:29:20 --> Router Class Initialized
+INFO - 2025-06-24 06:29:20 --> Output Class Initialized
+INFO - 2025-06-24 06:29:20 --> Security Class Initialized
+DEBUG - 2025-06-24 06:29:20 --> Global POST, GET and COOKIE data sanitized
+INFO - 2025-06-24 06:29:20 --> Input Class Initialized
+INFO - 2025-06-24 06:29:20 --> Language Class Initialized
+ERROR - 2025-06-24 06:29:20 --> 404 Page Not Found: Source/api
+INFO - 2025-06-24 06:29:49 --> Config Class Initialized
+INFO - 2025-06-24 06:29:49 --> Hooks Class Initialized
+DEBUG - 2025-06-24 06:29:49 --> UTF-8 Support Enabled
+INFO - 2025-06-24 06:29:49 --> Utf8 Class Initialized
+INFO - 2025-06-24 06:29:49 --> URI Class Initialized
+INFO - 2025-06-24 06:29:49 --> Router Class Initialized
+INFO - 2025-06-24 06:29:49 --> Output Class Initialized
+INFO - 2025-06-24 06:29:49 --> Security Class Initialized
+DEBUG - 2025-06-24 06:29:49 --> Global POST, GET and COOKIE data sanitized
+INFO - 2025-06-24 06:29:49 --> Input Class Initialized
+INFO - 2025-06-24 06:29:49 --> Language Class Initialized
+ERROR - 2025-06-24 06:29:49 --> 404 Page Not Found: Source/api
+INFO - 2025-06-24 06:30:10 --> Config Class Initialized
+INFO - 2025-06-24 06:30:10 --> Hooks Class Initialized
+DEBUG - 2025-06-24 06:30:10 --> UTF-8 Support Enabled
+INFO - 2025-06-24 06:30:10 --> Utf8 Class Initialized
+INFO - 2025-06-24 06:30:10 --> URI Class Initialized
+INFO - 2025-06-24 06:30:10 --> Router Class Initialized
+INFO - 2025-06-24 06:30:10 --> Output Class Initialized
+INFO - 2025-06-24 06:30:10 --> Security Class Initialized
+DEBUG - 2025-06-24 06:30:10 --> Global POST, GET and COOKIE data sanitized
+INFO - 2025-06-24 06:30:10 --> Input Class Initialized
+INFO - 2025-06-24 06:30:10 --> Language Class Initialized
+INFO - 2025-06-24 06:30:10 --> Loader Class Initialized
+INFO - 2025-06-24 06:30:10 --> Helper loaded: url_helper
+INFO - 2025-06-24 06:30:10 --> Helper loaded: form_helper
+INFO - 2025-06-24 06:30:10 --> Helper loaded: html_helper
+INFO - 2025-06-24 06:30:10 --> Database Driver Class Initialized
+INFO - 2025-06-24 06:30:10 --> Session: Class initialized using 'files' driver.
+INFO - 2025-06-24 06:30:10 --> Controller Class Initialized
+ERROR - 2025-06-24 06:30:10 --> Severity: 8192 --> str_replace(): Passing null to parameter #3 ($subject) of type array|string is deprecated /var/www/html/system/core/Output.php 447
+INFO - 2025-06-24 06:30:10 --> Final output sent to browser
+DEBUG - 2025-06-24 06:30:10 --> Total execution time: 0.0085
+INFO - 2025-06-24 06:30:13 --> Config Class Initialized
+INFO - 2025-06-24 06:30:13 --> Hooks Class Initialized
+DEBUG - 2025-06-24 06:30:13 --> UTF-8 Support Enabled
+INFO - 2025-06-24 06:30:13 --> Utf8 Class Initialized
+INFO - 2025-06-24 06:30:13 --> URI Class Initialized
+INFO - 2025-06-24 06:30:13 --> Router Class Initialized
+INFO - 2025-06-24 06:30:13 --> Output Class Initialized
+INFO - 2025-06-24 06:30:13 --> Security Class Initialized
+DEBUG - 2025-06-24 06:30:13 --> Global POST, GET and COOKIE data sanitized
+INFO - 2025-06-24 06:30:13 --> Input Class Initialized
+INFO - 2025-06-24 06:30:13 --> Language Class Initialized
+ERROR - 2025-06-24 06:30:13 --> 404 Page Not Found: Source/index.php
+INFO - 2025-06-24 06:31:33 --> Config Class Initialized
+INFO - 2025-06-24 06:31:33 --> Hooks Class Initialized
+DEBUG - 2025-06-24 06:31:33 --> UTF-8 Support Enabled
+INFO - 2025-06-24 06:31:33 --> Utf8 Class Initialized
+INFO - 2025-06-24 06:31:33 --> URI Class Initialized
+INFO - 2025-06-24 06:31:33 --> Router Class Initialized
+INFO - 2025-06-24 06:31:33 --> Output Class Initialized
+INFO - 2025-06-24 06:31:33 --> Security Class Initialized
+DEBUG - 2025-06-24 06:31:33 --> Global POST, GET and COOKIE data sanitized
+INFO - 2025-06-24 06:31:33 --> Input Class Initialized
+INFO - 2025-06-24 06:31:33 --> Language Class Initialized
+ERROR - 2025-06-24 06:31:33 --> 404 Page Not Found: Source/index.php
+INFO - 2025-06-24 06:32:25 --> Config Class Initialized
+INFO - 2025-06-24 06:32:25 --> Hooks Class Initialized
+DEBUG - 2025-06-24 06:32:25 --> UTF-8 Support Enabled
+INFO - 2025-06-24 06:32:25 --> Utf8 Class Initialized
+INFO - 2025-06-24 06:32:25 --> URI Class Initialized
+INFO - 2025-06-24 06:32:25 --> Router Class Initialized
+INFO - 2025-06-24 06:32:25 --> Output Class Initialized
+INFO - 2025-06-24 06:32:25 --> Security Class Initialized
+DEBUG - 2025-06-24 06:32:25 --> Global POST, GET and COOKIE data sanitized
+INFO - 2025-06-24 06:32:25 --> Input Class Initialized
+INFO - 2025-06-24 06:32:25 --> Language Class Initialized
+ERROR - 2025-06-24 06:32:25 --> 404 Page Not Found: Source/index.php
+INFO - 2025-06-24 06:32:29 --> Config Class Initialized
+INFO - 2025-06-24 06:32:29 --> Hooks Class Initialized
+DEBUG - 2025-06-24 06:32:29 --> UTF-8 Support Enabled
+INFO - 2025-06-24 06:32:29 --> Utf8 Class Initialized
+INFO - 2025-06-24 06:32:29 --> URI Class Initialized
+INFO - 2025-06-24 06:32:29 --> Router Class Initialized
+INFO - 2025-06-24 06:32:29 --> Output Class Initialized
+INFO - 2025-06-24 06:32:29 --> Security Class Initialized
+DEBUG - 2025-06-24 06:32:29 --> Global POST, GET and COOKIE data sanitized
+INFO - 2025-06-24 06:32:29 --> Input Class Initialized
+INFO - 2025-06-24 06:32:29 --> Language Class Initialized
+ERROR - 2025-06-24 06:32:29 --> 404 Page Not Found: Source/index.php
