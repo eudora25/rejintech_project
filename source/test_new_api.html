@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>새로운 API 구조 테스트</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f7fafc;
+        }
+        .container {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            color: #2d3748;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        .section {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+        }
+        .section h3 {
+            margin-top: 0;
+            color: #4a5568;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #2d3748;
+        }
+        input, select, textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+        textarea {
+            min-height: 150px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+        }
+        button {
+            background: #667eea;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+        button:hover {
+            background: #5a67d8;
+        }
+        .preset-btn {
+            background: #48bb78;
+            padding: 8px 16px;
+            font-size: 13px;
+        }
+        .preset-btn:hover {
+            background: #38a169;
+        }
+        .result {
+            background: #f7fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            padding: 15px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            white-space: pre-wrap;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .success {
+            border-left: 4px solid #48bb78;
+        }
+        .error {
+            border-left: 4px solid #f56565;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        @media (max-width: 768px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 새로운 API 구조 테스트</h1>
+        
+        <div class="grid">
+            <div class="section">
+                <h3>🔐 로그인</h3>
+                <div class="form-group">
+                    <label for="username">사용자명:</label>
+                    <input type="text" id="username" value="admin">
+                </div>
+                <div class="form-group">
+                    <label for="password">패스워드:</label>
+                    <input type="password" id="password" value="password">
+                </div>
+                <button onclick="login()">로그인</button>
+                <button onclick="logout()">로그아웃</button>
+                <div id="auth-status" style="margin-top: 10px; font-size: 14px;"></div>
+            </div>
+            
+            <div class="section">
+                <h3>⚙️ API 설정</h3>
+                <div class="form-group">
+                    <label for="api-url">API URL:</label>
+                    <input type="text" id="api-url" value="/source/index.php/api/procurement/delivery-requests">
+                </div>
+                <div class="form-group">
+                    <label for="method">메서드:</label>
+                    <select id="method">
+                        <option value="POST" selected>POST</option>
+                        <option value="GET">GET</option>
+                        <option value="PUT">PUT</option>
+                        <option value="DELETE">DELETE</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h3>📝 요청 본문</h3>
+            <div style="margin-bottom: 15px;">
+                <button class="preset-btn" onclick="loadPreset('basic')">기본</button>
+                <button class="preset-btn" onclick="loadPreset('filter')">필터</button>
+                <button class="preset-btn" onclick="loadPreset('sort')">정렬</button>
+                <button class="preset-btn" onclick="loadPreset('complex')">복합</button>
+            </div>
+            <textarea id="request-body"></textarea>
+            <div style="margin-top: 15px;">
+                <button onclick="testApi()">🚀 API 테스트</button>
+                <button onclick="validateJson()">✓ JSON 검증</button>
+                <button onclick="clearResult()">🗑️ 결과 지우기</button>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h3>📊 응답 결과</h3>
+            <div id="result" class="result">아직 요청을 보내지 않았습니다.</div>
+        </div>
+    </div>
+
+    <script>
+        let currentToken = null;
+        
+        // 초기화
+        document.addEventListener('DOMContentLoaded', function() {
+            loadPreset('basic');
+            // 로컬 스토리지에서 토큰 복원
+            const savedToken = localStorage.getItem('jwt_token');
+            if (savedToken) {
+                currentToken = savedToken;
+                updateAuthStatus('저장된 토큰 복원됨', 'success');
+            }
+        });
+        
+        // 로그인
+        async function login() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            
+            if (!username || !password) {
+                updateAuthStatus('사용자명과 패스워드를 입력해주세요.', 'error');
+                return;
+            }
+            
+            updateAuthStatus('로그인 중...', 'info');
+            
+            try {
+                const response = await fetch('/source/index.php/api/auth/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ username, password })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    currentToken = data.token;
+                    localStorage.setItem('jwt_token', currentToken);
+                    updateAuthStatus(`로그인 성공! 사용자: ${data.user.username}`, 'success');
+                } else {
+                    updateAuthStatus(data.message || '로그인 실패', 'error');
+                }
+            } catch (error) {
+                updateAuthStatus('네트워크 오류: ' + error.message, 'error');
+            }
+        }
+        
+        // 로그아웃
+        function logout() {
+            currentToken = null;
+            localStorage.removeItem('jwt_token');
+            updateAuthStatus('로그아웃됨', 'info');
+        }
+        
+        // 인증 상태 업데이트
+        function updateAuthStatus(message, type) {
+            const statusDiv = document.getElementById('auth-status');
+            statusDiv.textContent = message;
+            statusDiv.className = type;
+        }
+        
+        // 프리셋 로드
+        function loadPreset(type) {
+            let preset = {};
+            
+            switch(type) {
+                case 'basic':
+                    preset = {
+                        "filterModel": {
+                            "type": ["CSO"]
+                        },
+                        "sortModel": {
+                            "bizName": "desc"
+                        },
+                        "page": 1,
+                        "size": 50
+                    };
+                    break;
+                    
+                case 'filter':
+                    preset = {
+                        "filterModel": {
+                            "type": ["CSO", "MAS"],
+                            "dminsttNm": "서울특별시",
+                            "dateFrom": "2024-01-01",
+                            "dateTo": "2024-12-31"
+                        },
+                        "sortModel": {
+                            "dlvrReqRcptDate": "desc"
+                        },
+                        "page": 1,
+                        "size": 100
+                    };
+                    break;
+                    
+                case 'sort':
+                    preset = {
+                        "filterModel": {
+                            "type": ["CSO"]
+                        },
+                        "sortModel": {
+                            "dlvrReqRcptDate": "desc",
+                            "incdecAmt": "desc",
+                            "bizName": "asc"
+                        },
+                        "page": 1,
+                        "size": 25
+                    };
+                    break;
+                    
+                case 'complex':
+                    preset = {
+                        "filterModel": {
+                            "type": ["CSO"],
+                            "dminsttNm": "서울특별시",
+                            "corpNm": "삼성",
+                            "dateFrom": "2024-06-01",
+                            "dateTo": "2024-06-30",
+                            "amountFrom": 1000000,
+                            "amountTo": 10000000
+                        },
+                        "sortModel": {
+                            "incdecAmt": "desc",
+                            "dlvrReqRcptDate": "desc"
+                        },
+                        "page": 1,
+                        "size": 20
+                    };
+                    break;
+            }
+            
+            document.getElementById('request-body').value = JSON.stringify(preset, null, 2);
+        }
+        
+        // JSON 검증
+        function validateJson() {
+            const jsonText = document.getElementById('request-body').value;
+            const resultDiv = document.getElementById('result');
+            
+            try {
+                const parsed = JSON.parse(jsonText);
+                resultDiv.textContent = '✅ 유효한 JSON입니다.\n\n' + JSON.stringify(parsed, null, 2);
+                resultDiv.className = 'result success';
+            } catch (error) {
+                resultDiv.textContent = '❌ JSON 형식 오류: ' + error.message;
+                resultDiv.className = 'result error';
+            }
+        }
+        
+        // API 테스트
+        async function testApi() {
+            const url = document.getElementById('api-url').value;
+            const method = document.getElementById('method').value;
+            const bodyText = document.getElementById('request-body').value;
+            const resultDiv = document.getElementById('result');
+            
+            if (!currentToken) {
+                resultDiv.textContent = '❌ 로그인이 필요합니다.';
+                resultDiv.className = 'result error';
+                return;
+            }
+            
+            resultDiv.textContent = '🔄 요청 중...';
+            resultDiv.className = 'result';
+            
+            try {
+                const options = {
+                    method: method,
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${currentToken}`
+                    }
+                };
+                
+                if (method !== 'GET' && bodyText.trim()) {
+                    try {
+                        JSON.parse(bodyText); // JSON 유효성 검사
+                        options.body = bodyText;
+                    } catch (jsonError) {
+                        resultDiv.textContent = `❌ JSON 형식 오류: ${jsonError.message}`;
+                        resultDiv.className = 'result error';
+                        return;
+                    }
+                }
+                
+                const startTime = Date.now();
+                const response = await fetch(url, options);
+                const endTime = Date.now();
+                const responseText = await response.text();
+                
+                let result = `📊 응답 정보:\n`;
+                result += `• 상태: ${response.status} ${response.statusText}\n`;
+                result += `• 응답 시간: ${endTime - startTime}ms\n`;
+                result += `• 타임스탬프: ${new Date().toLocaleString('ko-KR')}\n\n`;
+                result += `📄 응답 본문:\n`;
+                
+                try {
+                    const jsonData = JSON.parse(responseText);
+                    result += JSON.stringify(jsonData, null, 2);
+                } catch (e) {
+                    result += responseText;
+                }
+                
+                resultDiv.textContent = result;
+                resultDiv.className = response.ok ? 'result success' : 'result error';
+                
+            } catch (error) {
+                resultDiv.textContent = `❌ 네트워크 오류: ${error.message}`;
+                resultDiv.className = 'result error';
+            }
+        }
+        
+        // 결과 지우기
+        function clearResult() {
+            document.getElementById('result').textContent = '결과가 지워졌습니다.';
+            document.getElementById('result').className = 'result';
+        }
+    </script>
+</body>
+</html> 
