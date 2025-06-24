@@ -474,3 +474,75 @@ DEBUG - 2025-06-24 06:41:47 --> Global POST, GET and COOKIE data sanitized
 INFO - 2025-06-24 06:41:47 --> Input Class Initialized
 INFO - 2025-06-24 06:41:47 --> Language Class Initialized
 ERROR - 2025-06-24 06:41:47 --> 404 Page Not Found: Source/index.php
+INFO - 2025-06-24 06:42:48 --> Config Class Initialized
+INFO - 2025-06-24 06:42:48 --> Hooks Class Initialized
+DEBUG - 2025-06-24 06:42:48 --> UTF-8 Support Enabled
+INFO - 2025-06-24 06:42:48 --> Utf8 Class Initialized
+INFO - 2025-06-24 06:42:48 --> URI Class Initialized
+INFO - 2025-06-24 06:42:48 --> Router Class Initialized
+INFO - 2025-06-24 06:42:48 --> Output Class Initialized
+INFO - 2025-06-24 06:42:48 --> Security Class Initialized
+DEBUG - 2025-06-24 06:42:48 --> Global POST, GET and COOKIE data sanitized
+INFO - 2025-06-24 06:42:48 --> Input Class Initialized
+INFO - 2025-06-24 06:42:48 --> Language Class Initialized
+INFO - 2025-06-24 06:42:48 --> Loader Class Initialized
+INFO - 2025-06-24 06:42:48 --> Helper loaded: url_helper
+INFO - 2025-06-24 06:42:48 --> Helper loaded: form_helper
+INFO - 2025-06-24 06:42:48 --> Helper loaded: html_helper
+INFO - 2025-06-24 06:42:48 --> Database Driver Class Initialized
+INFO - 2025-06-24 06:42:48 --> Session: Class initialized using 'files' driver.
+INFO - 2025-06-24 06:42:48 --> Controller Class Initialized
+DEBUG - 2025-06-24 06:42:48 --> Config file loaded: /var/www/html/application/config/jwt.php
+INFO - 2025-06-24 06:42:48 --> Model Class Initialized
+INFO - 2025-06-24 06:42:48 --> Model Class Initialized
+INFO - 2025-06-24 06:42:48 --> Model Class Initialized
+INFO - 2025-06-24 06:42:49 --> Final output sent to browser
+DEBUG - 2025-06-24 06:42:49 --> Total execution time: 0.0704
+INFO - 2025-06-24 06:44:38 --> Config Class Initialized
+INFO - 2025-06-24 06:44:38 --> Hooks Class Initialized
+DEBUG - 2025-06-24 06:44:38 --> UTF-8 Support Enabled
+INFO - 2025-06-24 06:44:38 --> Utf8 Class Initialized
+INFO - 2025-06-24 06:44:38 --> URI Class Initialized
+INFO - 2025-06-24 06:44:38 --> Router Class Initialized
+INFO - 2025-06-24 06:44:38 --> Output Class Initialized
+INFO - 2025-06-24 06:44:38 --> Security Class Initialized
+DEBUG - 2025-06-24 06:44:38 --> Global POST, GET and COOKIE data sanitized
+INFO - 2025-06-24 06:44:38 --> Input Class Initialized
+INFO - 2025-06-24 06:44:38 --> Language Class Initialized
+INFO - 2025-06-24 06:44:38 --> Loader Class Initialized
+INFO - 2025-06-24 06:44:38 --> Helper loaded: url_helper
+INFO - 2025-06-24 06:44:38 --> Helper loaded: form_helper
+INFO - 2025-06-24 06:44:38 --> Helper loaded: html_helper
+INFO - 2025-06-24 06:44:38 --> Database Driver Class Initialized
+INFO - 2025-06-24 06:44:38 --> Session: Class initialized using 'files' driver.
+INFO - 2025-06-24 06:44:38 --> Controller Class Initialized
+DEBUG - 2025-06-24 06:44:38 --> Config file loaded: /var/www/html/application/config/jwt.php
+INFO - 2025-06-24 06:44:38 --> Model Class Initialized
+INFO - 2025-06-24 06:44:38 --> Model Class Initialized
+INFO - 2025-06-24 06:44:38 --> Model Class Initialized
+INFO - 2025-06-24 06:44:38 --> Final output sent to browser
+DEBUG - 2025-06-24 06:44:38 --> Total execution time: 0.0720
+INFO - 2025-06-24 06:45:14 --> Config Class Initialized
+INFO - 2025-06-24 06:45:14 --> Hooks Class Initialized
+DEBUG - 2025-06-24 06:45:14 --> UTF-8 Support Enabled
+INFO - 2025-06-24 06:45:14 --> Utf8 Class Initialized
+INFO - 2025-06-24 06:45:14 --> URI Class Initialized
+INFO - 2025-06-24 06:45:14 --> Router Class Initialized
+INFO - 2025-06-24 06:45:14 --> Output Class Initialized
+INFO - 2025-06-24 06:45:14 --> Security Class Initialized
+DEBUG - 2025-06-24 06:45:14 --> Global POST, GET and COOKIE data sanitized
+INFO - 2025-06-24 06:45:14 --> Input Class Initialized
+INFO - 2025-06-24 06:45:14 --> Language Class Initialized
+INFO - 2025-06-24 06:45:14 --> Loader Class Initialized
+INFO - 2025-06-24 06:45:14 --> Helper loaded: url_helper
+INFO - 2025-06-24 06:45:14 --> Helper loaded: form_helper
+INFO - 2025-06-24 06:45:14 --> Helper loaded: html_helper
+INFO - 2025-06-24 06:45:14 --> Database Driver Class Initialized
+INFO - 2025-06-24 06:45:14 --> Session: Class initialized using 'files' driver.
+INFO - 2025-06-24 06:45:14 --> Controller Class Initialized
+DEBUG - 2025-06-24 06:45:14 --> Config file loaded: /var/www/html/application/config/jwt.php
+INFO - 2025-06-24 06:45:14 --> Model Class Initialized
+INFO - 2025-06-24 06:45:14 --> Model Class Initialized
+INFO - 2025-06-24 06:45:14 --> Model Class Initialized
+INFO - 2025-06-24 06:45:14 --> Final output sent to browser
+DEBUG - 2025-06-24 06:45:14 --> Total execution time: 0.0627

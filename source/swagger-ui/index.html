@@ -140,7 +140,7 @@
         <div id="login-controls">
             <div id="login-form">
                 <input type="text" id="username" placeholder="사용자명" value="admin">
-                <input type="password" id="password" placeholder="패스워드" value="password">
+                <input type="password" id="password" placeholder="패스워드" value="admin123">
             </div>
             <button id="login-btn">로그인</button>
             <div id="user-status">로그인되지 않음</div>
@@ -232,7 +232,7 @@
             updateUserStatus('로그인 중...', 'info');
             
             try {
-                const response = await fetch('/source/index.php/api/auth/login', {
+                const response = await fetch('../index.php/api/auth/login', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -243,20 +243,20 @@
                 const data = await response.json();
                 
                 if (data.success) {
-                    currentToken = data.token;
+                    currentToken = data.data.token;
                     localStorage.setItem('jwt_token', currentToken);
-                    localStorage.setItem('user_info', JSON.stringify(data.user));
+                    localStorage.setItem('user_info', JSON.stringify(data.data.user));
                     
-                    updateUIAfterLogin(data);
+                    updateUIAfterLogin(data.data);
                     setSwaggerAuth(currentToken);
                     
-                    updateUserStatus(`로그인됨: ${data.user.username}`, 'success');
+                    updateUserStatus(`로그인됨: ${data.data.user.username}`, 'success');
                 } else {
                     updateUserStatus(data.message || '로그인 실패', 'error');
                 }
             } catch (error) {
                 console.error('로그인 오류:', error);
-                updateUserStatus('네트워크 오류', 'error');
+                updateUserStatus('네트워크 오류: ' + error.message, 'error');
             }
         }
         
