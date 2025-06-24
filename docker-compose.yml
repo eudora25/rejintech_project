@@ -1,0 +1,41 @@
+version: '3.9'
+services:
+    ubuntu:
+        container_name: rejintech-workspace
+        build:
+            context: ./images/ubuntu
+            dockerfile: Dockerfile
+        stdin_open: true
+        tty: true
+        environment:
+            # JWT 설정 (보안을 위해 강력한 키로 변경 필요)
+            JWT_SECRET_KEY: "rejintech_super_secret_jwt_key_2025_change_this_to_random_string_in_production"
+            JWT_ALGORITHM: "HS256"
+            JWT_EXPIRATION: "3600"
+            JWT_ISSUER: "rejintech"
+            JWT_AUDIENCE: "rejintech_users"
+            JWT_REFRESH_EXPIRATION: "604800"
+            JWT_REFRESH_ENABLED: "false"
+            # 애플리케이션 설정
+            APP_ENV: "development"
+            APP_DEBUG: "true"
+            APP_URL: "http://localhost"
+        volumes:
+            - ./source:/var/www/html
+            - ./images/ubuntu/conf/nginx.conf:/etc/nginx/conf.d/default.conf
+        ports:
+            - "80:80"
+            - "443:443"
+    db:
+        image: mariadb:latest
+        container_name: rejintech-mariadb
+        restart: always
+        environment:
+            MYSQL_DATABASE: jintech
+            MYSQL_USER: jintech
+            MYSQL_PASSWORD: jin2010!!
+            MYSQL_ROOT_PASSWORD: A77ila@
+        volumes:
+            - ./mariadb_data:/var/lib/mysql    
+        ports:
+            - "3306:3306"
