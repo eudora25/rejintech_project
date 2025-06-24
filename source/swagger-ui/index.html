@@ -262,6 +262,124 @@
             font-family: 'Courier New', monospace;
             font-size: 11px;
         }
+        
+        /* API 테스트 패널 스타일 */
+        #api-test-panel {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 350px;
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            z-index: 9998;
+            font-family: 'Segoe UI', sans-serif;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        
+        #api-test-header {
+            background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 10px 10px 0 0;
+            font-weight: 600;
+            font-size: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        #api-test-body {
+            padding: 20px;
+        }
+        
+        .api-test-section {
+            margin-bottom: 20px;
+        }
+        
+        .api-test-section h4 {
+            margin: 0 0 10px 0;
+            color: #2d3748;
+            font-size: 14px;
+            font-weight: 600;
+        }
+        
+        .api-test-input {
+            width: 100%;
+            padding: 8px 10px;
+            border: 1px solid #e2e8f0;
+            border-radius: 4px;
+            font-size: 13px;
+            margin-bottom: 8px;
+            box-sizing: border-box;
+        }
+        
+        .api-test-textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #e2e8f0;
+            border-radius: 4px;
+            font-size: 12px;
+            font-family: 'Courier New', monospace;
+            resize: vertical;
+            min-height: 120px;
+            box-sizing: border-box;
+        }
+        
+        .api-test-btn {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 13px;
+            cursor: pointer;
+            margin-right: 10px;
+            margin-bottom: 8px;
+        }
+        
+        .api-test-btn-primary {
+            background: #48bb78;
+            color: white;
+        }
+        
+        .api-test-btn-secondary {
+            background: #edf2f7;
+            color: #4a5568;
+        }
+        
+        .api-test-result {
+            background: #f7fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            padding: 12px;
+            font-size: 12px;
+            font-family: 'Courier New', monospace;
+            white-space: pre-wrap;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        
+        .minimize-test-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 18px;
+            font-weight: bold;
+        }
+        
+        #api-test-panel.minimized #api-test-body {
+            display: none;
+        }
+        
+        #api-test-panel.minimized {
+            width: auto;
+        }
     </style>
 </head>
 <body>
@@ -314,6 +432,37 @@
     
     <div id="swagger-ui"></div>
     
+    <div id="api-test-panel">
+        <div id="api-test-header">
+            <span>🔧 API 테스트</span>
+            <button class="minimize-test-btn" onclick="toggleApiTestPanel()">−</button>
+        </div>
+        <div id="api-test-body">
+            <div class="api-test-section">
+                <h4>요청 설정</h4>
+                <input type="text" id="api-test-url" placeholder="API URL" class="api-test-input">
+                <select id="api-test-method" class="api-test-input">
+                    <option value="GET">GET</option>
+                    <option value="POST">POST</option>
+                    <option value="PUT">PUT</option>
+                    <option value="DELETE">DELETE</option>
+                    <option value="PATCH">PATCH</option>
+                </select>
+                <button class="api-test-btn api-test-btn-primary" onclick="performApiTest()">🚀 테스트</button>
+            </div>
+            
+            <div class="api-test-section">
+                <h4>요청 본문</h4>
+                <textarea id="api-test-body" class="api-test-textarea"></textarea>
+            </div>
+            
+            <div class="api-test-section">
+                <h4>응답</h4>
+                <div class="api-test-result" id="api-test-result"></div>
+            </div>
+        </div>
+    </div>
+    
     <script src="https://unpkg.com/swagger-ui-dist@4.15.5/swagger-ui-bundle.js" crossorigin></script>
     <script src="https://unpkg.com/swagger-ui-dist@4.15.5/swagger-ui-standalone-preset.js" crossorigin></script>
     <script>
@@ -328,7 +477,7 @@
         
         function initSwaggerUI() {
             swaggerUI = SwaggerUIBundle({
-                url: '/api/docs/openapi.json?v=' + Date.now(),
+                url: '/source/api/docs/openapi.json?v=' + Date.now(),
                 dom_id: '#swagger-ui',
                 deepLinking: true,
                 presets: [
@@ -404,7 +553,7 @@
             showMessage('로그인 중...', 'info');
             
             try {
-                const response = await fetch('/api/auth/login', {
+                const response = await fetch('/source/index.php/api/auth/login', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -470,7 +619,7 @@
             showMessage('토큰 검증 중...', 'info');
             
             try {
-                const response = await fetch('/api/auth/verify', {
+                const response = await fetch('/source/index.php/api/auth/verify', {
                     method: 'POST',
                     headers: {
                         'Authorization': `Bearer ${currentToken}`,
@@ -553,6 +702,14 @@
             btn.textContent = panel.classList.contains('minimized') ? '+' : '−';
         }
         
+        function toggleApiTestPanel() {
+            const panel = document.getElementById('api-test-panel');
+            const btn = document.querySelector('.minimize-test-btn');
+            
+            panel.classList.toggle('minimized');
+            btn.textContent = panel.classList.contains('minimized') ? '+' : '−';
+        }
+        
         // 엔터키로 로그인
         document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('username').addEventListener('keypress', function(e) {
@@ -561,7 +718,177 @@
             document.getElementById('password').addEventListener('keypress', function(e) {
                 if (e.key === 'Enter') login();
             });
+            
+            // API 테스트 패널 초기화
+            initApiTestPanel();
         });
+        
+        function initApiTestPanel() {
+            // 기본 URL 설정
+            document.getElementById('api-test-url').value = '/source/index.php/api/procurement/delivery-requests';
+            document.getElementById('api-test-method').value = 'POST';
+            
+            // 기본 요청 본문 설정
+            const defaultRequest = {
+                "filterModel": {
+                    "type": ["CSO"]
+                },
+                "sortModel": {
+                    "bizName": "desc"
+                },
+                "page": 1,
+                "size": 50
+            };
+            
+            document.getElementById('api-test-body').value = JSON.stringify(defaultRequest, null, 2);
+            
+            // 프리셋 버튼들 추가
+            const bodySection = document.querySelector('#api-test-body').parentElement;
+            const presetButtons = document.createElement('div');
+            presetButtons.innerHTML = `
+                <button class="api-test-btn api-test-btn-secondary" onclick="loadPreset('basic')">기본</button>
+                <button class="api-test-btn api-test-btn-secondary" onclick="loadPreset('filter')">필터</button>
+                <button class="api-test-btn api-test-btn-secondary" onclick="loadPreset('sort')">정렬</button>
+                <button class="api-test-btn api-test-btn-secondary" onclick="loadPreset('complex')">복합</button>
+            `;
+            bodySection.insertBefore(presetButtons, document.getElementById('api-test-body'));
+        }
+        
+        function loadPreset(type) {
+            let preset = {};
+            
+            switch(type) {
+                case 'basic':
+                    preset = {
+                        "filterModel": {
+                            "type": ["CSO"]
+                        },
+                        "sortModel": {
+                            "bizName": "desc"
+                        },
+                        "page": 1,
+                        "size": 50
+                    };
+                    break;
+                    
+                case 'filter':
+                    preset = {
+                        "filterModel": {
+                            "type": ["CSO", "MAS"],
+                            "dminsttNm": "서울특별시",
+                            "dateFrom": "2024-01-01",
+                            "dateTo": "2024-12-31"
+                        },
+                        "sortModel": {
+                            "dlvrReqRcptDate": "desc"
+                        },
+                        "page": 1,
+                        "size": 100
+                    };
+                    break;
+                    
+                case 'sort':
+                    preset = {
+                        "filterModel": {
+                            "type": ["CSO"]
+                        },
+                        "sortModel": {
+                            "dlvrReqRcptDate": "desc",
+                            "incdecAmt": "desc",
+                            "bizName": "asc"
+                        },
+                        "page": 1,
+                        "size": 25
+                    };
+                    break;
+                    
+                case 'complex':
+                    preset = {
+                        "filterModel": {
+                            "type": ["CSO"],
+                            "dminsttNm": "서울특별시",
+                            "corpNm": "삼성",
+                            "dateFrom": "2024-06-01",
+                            "dateTo": "2024-06-30",
+                            "amountFrom": 1000000,
+                            "amountTo": 10000000
+                        },
+                        "sortModel": {
+                            "incdecAmt": "desc",
+                            "dlvrReqRcptDate": "desc"
+                        },
+                        "page": 1,
+                        "size": 20
+                    };
+                    break;
+            }
+            
+            document.getElementById('api-test-body').value = JSON.stringify(preset, null, 2);
+        }
+        
+        async function performApiTest() {
+            const url = document.getElementById('api-test-url').value;
+            const method = document.getElementById('api-test-method').value;
+            const bodyText = document.getElementById('api-test-body').value;
+            const resultDiv = document.getElementById('api-test-result');
+            
+            if (!url) {
+                resultDiv.textContent = '❌ URL을 입력해주세요.';
+                return;
+            }
+            
+            if (!currentToken) {
+                resultDiv.textContent = '❌ 로그인이 필요합니다.';
+                return;
+            }
+            
+            resultDiv.textContent = '🔄 요청 중...';
+            
+            try {
+                const options = {
+                    method: method,
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${currentToken}`
+                    }
+                };
+                
+                if (method !== 'GET' && bodyText.trim()) {
+                    try {
+                        JSON.parse(bodyText); // JSON 유효성 검사
+                        options.body = bodyText;
+                    } catch (jsonError) {
+                        resultDiv.textContent = `❌ JSON 형식 오류: ${jsonError.message}`;
+                        return;
+                    }
+                }
+                
+                const response = await fetch(url, options);
+                const responseText = await response.text();
+                
+                let result = `Status: ${response.status} ${response.statusText}\n\n`;
+                
+                try {
+                    const jsonData = JSON.parse(responseText);
+                    result += JSON.stringify(jsonData, null, 2);
+                } catch (e) {
+                    result += responseText;
+                }
+                
+                resultDiv.textContent = result;
+                
+                // 응답 상태에 따른 색상 변경
+                if (response.ok) {
+                    resultDiv.style.borderLeft = '4px solid #48bb78';
+                } else {
+                    resultDiv.style.borderLeft = '4px solid #f56565';
+                }
+                
+            } catch (error) {
+                resultDiv.textContent = `❌ 네트워크 오류: ${error.message}`;
+                resultDiv.style.borderLeft = '4px solid #f56565';
+            }
+        }
     </script>
 </body>
 </html> 
