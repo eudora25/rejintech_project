@@ -11,6 +11,8 @@
             background: #fafafa;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
+        
+        /* Swagger UI 커스터마이징 */
         .swagger-ui .topbar {
             background-color: #2d3748;
             border-bottom: 3px solid #667eea;
@@ -30,18 +32,6 @@
             font-size: 2rem;
             font-weight: 700;
         }
-        .swagger-ui .info .description {
-            color: #4a5568;
-            font-size: 1.1rem;
-            line-height: 1.6;
-        }
-        .swagger-ui .scheme-container {
-            background: #f7fafc;
-            border: 1px solid #e2e8f0;
-            border-radius: 8px;
-            padding: 15px;
-            margin: 20px 0;
-        }
         .swagger-ui .btn {
             border-radius: 6px;
             font-weight: 600;
@@ -55,413 +45,109 @@
             border-color: #5a67d8;
         }
         
-        /* 로그인 패널 스타일 */
-        #auth-panel {
+        /* 상단 로그인 바 */
+        #login-bar {
             position: fixed;
-            top: 80px;
-            right: 20px;
-            width: 320px;
-            background: white;
-            border: 2px solid #e2e8f0;
-            border-radius: 12px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-            z-index: 9999;
-            font-family: 'Segoe UI', sans-serif;
-        }
-        
-        #auth-panel-header {
+            top: 0;
+            left: 0;
+            right: 0;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
-            padding: 15px 20px;
-            border-radius: 10px 10px 0 0;
-            font-weight: 600;
-            font-size: 16px;
+            padding: 10px 20px;
+            z-index: 10000;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            font-family: 'Segoe UI', sans-serif;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
         }
         
-        #auth-panel-body {
-            padding: 20px;
-        }
-        
-        .auth-form-group {
-            margin-bottom: 15px;
-        }
-        
-        .auth-form-group label {
-            display: block;
-            margin-bottom: 5px;
+        #login-bar h3 {
+            margin: 0;
+            font-size: 18px;
             font-weight: 600;
-            color: #2d3748;
-            font-size: 14px;
         }
         
-        .auth-form-group input {
-            width: 100%;
-            padding: 10px 12px;
-            border: 2px solid #e2e8f0;
-            border-radius: 6px;
-            font-size: 14px;
-            transition: border-color 0.2s;
-            box-sizing: border-box;
+        #login-controls {
+            display: flex;
+            align-items: center;
+            gap: 15px;
         }
         
-        .auth-form-group input:focus {
-            outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        #login-form {
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
         
-        .auth-btn {
-            width: 100%;
-            padding: 12px;
+        #login-form input {
+            padding: 6px 10px;
             border: none;
-            border-radius: 6px;
-            font-weight: 600;
+            border-radius: 4px;
             font-size: 14px;
-            cursor: pointer;
-            transition: all 0.2s;
-            margin-bottom: 10px;
+            width: 100px;
         }
         
-        .auth-btn-primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        #login-btn, #logout-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
             color: white;
-        }
-        
-        .auth-btn-primary:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
-        }
-        
-        .auth-btn-secondary {
-            background: #f7fafc;
-            color: #4a5568;
-            border: 2px solid #e2e8f0;
-        }
-        
-        .auth-btn-secondary:hover {
-            background: #edf2f7;
-        }
-        
-        .auth-btn-danger {
-            background: #fed7d7;
-            color: #c53030;
-            border: 2px solid #feb2b2;
-        }
-        
-        .auth-btn-danger:hover {
-            background: #fbb6ce;
-        }
-        
-        .auth-status {
-            padding: 12px;
-            border-radius: 6px;
-            margin-bottom: 15px;
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
             font-size: 14px;
             font-weight: 500;
         }
         
-        .auth-status.success {
-            background: #c6f6d5;
-            color: #22543d;
-            border: 1px solid #9ae6b4;
+        #login-btn:hover, #logout-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
         }
         
-        .auth-status.error {
-            background: #fed7d7;
-            color: #c53030;
-            border: 1px solid #feb2b2;
-        }
-        
-        .auth-status.info {
-            background: #bee3f8;
-            color: #2a4365;
-            border: 1px solid #90cdf4;
-        }
-        
-        .token-info {
-            background: #f7fafc;
-            border: 1px solid #e2e8f0;
-            border-radius: 6px;
-            padding: 12px;
-            margin-bottom: 15px;
-            font-size: 12px;
-            line-height: 1.4;
-        }
-        
-        .token-info .token-preview {
-            font-family: 'Courier New', monospace;
-            background: #edf2f7;
-            padding: 8px;
-            border-radius: 4px;
-            margin: 8px 0;
-            word-break: break-all;
-            font-size: 11px;
-            color: #2d3748;
-        }
-        
-        .minimize-btn {
-            background: none;
-            border: none;
-            color: white;
-            font-size: 18px;
-            cursor: pointer;
-            padding: 0;
-            width: 24px;
-            height: 24px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: background-color 0.2s;
-        }
-        
-        .minimize-btn:hover {
-            background-color: rgba(255, 255, 255, 0.2);
-        }
-        
-        #auth-panel.minimized #auth-panel-body {
-            display: none;
-        }
-        
-        #auth-panel.minimized {
-            width: auto;
-        }
-        
-        .test-accounts {
-            background: #f0f8ff;
-            border: 1px solid #b3d9ff;
-            border-radius: 6px;
-            padding: 12px;
-            margin-bottom: 15px;
-            font-size: 12px;
-        }
-        
-        .test-accounts h4 {
-            margin: 0 0 8px 0;
-            font-size: 13px;
-            color: #2a4365;
-        }
-        
-        .test-accounts ul {
-            margin: 0;
-            padding-left: 16px;
-            color: #4a5568;
-        }
-        
-        .test-accounts li {
-            margin-bottom: 4px;
-        }
-        
-        .test-accounts code {
-            background: #e6f3ff;
-            padding: 2px 4px;
-            border-radius: 3px;
-            font-family: 'Courier New', monospace;
-            font-size: 11px;
-        }
-        
-        /* API 테스트 패널 스타일 */
-        #api-test-panel {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            width: 350px;
-            background: white;
-            border: 2px solid #e2e8f0;
-            border-radius: 12px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-            z-index: 9998;
-            font-family: 'Segoe UI', sans-serif;
-            max-height: 80vh;
-            overflow-y: auto;
-        }
-        
-        #api-test-header {
-            background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
-            color: white;
-            padding: 15px 20px;
-            border-radius: 10px 10px 0 0;
-            font-weight: 600;
-            font-size: 16px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
-        #api-test-body {
-            padding: 20px;
-        }
-        
-        .api-test-section {
-            margin-bottom: 20px;
-        }
-        
-        .api-test-section h4 {
-            margin: 0 0 10px 0;
-            color: #2d3748;
+        #user-status {
             font-size: 14px;
-            font-weight: 600;
+            color: rgba(255, 255, 255, 0.9);
         }
         
-        .api-test-input {
-            width: 100%;
-            padding: 8px 10px;
-            border: 1px solid #e2e8f0;
-            border-radius: 4px;
-            font-size: 13px;
-            margin-bottom: 8px;
-            box-sizing: border-box;
+        /* Swagger UI 상단 여백 */
+        #swagger-ui {
+            margin-top: 60px;
         }
         
-        .api-test-textarea {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #e2e8f0;
-            border-radius: 4px;
-            font-size: 12px;
-            font-family: 'Courier New', monospace;
-            resize: vertical;
-            min-height: 120px;
-            box-sizing: border-box;
-        }
-        
-        .api-test-btn {
-            padding: 10px 15px;
-            border: none;
-            border-radius: 6px;
-            font-weight: 600;
-            font-size: 13px;
-            cursor: pointer;
-            margin-right: 10px;
-            margin-bottom: 8px;
-        }
-        
-        .api-test-btn-primary {
-            background: #48bb78;
-            color: white;
-        }
-        
-        .api-test-btn-secondary {
-            background: #edf2f7;
-            color: #4a5568;
-        }
-        
-        .api-test-result {
-            background: #f7fafc;
-            border: 1px solid #e2e8f0;
-            border-radius: 6px;
-            padding: 12px;
-            font-size: 12px;
-            font-family: 'Courier New', monospace;
-            white-space: pre-wrap;
-            max-height: 200px;
-            overflow-y: auto;
-        }
-        
-        .minimize-test-btn {
-            background: rgba(255, 255, 255, 0.2);
-            border: none;
-            color: white;
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            cursor: pointer;
-            font-size: 18px;
-            font-weight: bold;
-        }
-        
-        #api-test-panel.minimized #api-test-body {
-            display: none;
-        }
-        
-        #api-test-panel.minimized {
-            width: auto;
+        /* 반응형 */
+        @media (max-width: 768px) {
+            #login-bar {
+                flex-direction: column;
+                padding: 10px;
+                gap: 10px;
+            }
+            
+            #login-form {
+                flex-wrap: wrap;
+                gap: 5px;
+            }
+            
+            #login-form input {
+                width: 80px;
+                font-size: 12px;
+            }
         }
     </style>
 </head>
 <body>
-    <!-- JWT 인증 패널 -->
-    <div id="auth-panel">
-        <div id="auth-panel-header">
-            <span>🔐 JWT 인증</span>
-            <button class="minimize-btn" onclick="toggleAuthPanel()">−</button>
-        </div>
-        <div id="auth-panel-body">
+    <!-- 상단 로그인 바 -->
+    <div id="login-bar">
+        <h3>📚 Rejintech API</h3>
+        <div id="login-controls">
             <div id="login-form">
-                <div class="test-accounts">
-                    <h4>📋 테스트 계정</h4>
-                    <ul>
-                        <li><code>admin</code> / <code>password</code></li>
-                        <li><code>testuser</code> / <code>password</code></li>
-                    </ul>
-                </div>
-                
-                <div class="auth-form-group">
-                    <label for="username">사용자명</label>
-                    <input type="text" id="username" placeholder="admin" value="admin">
-                </div>
-                <div class="auth-form-group">
-                    <label for="password">패스워드</label>
-                    <input type="password" id="password" placeholder="password" value="password">
-                </div>
-                <button class="auth-btn auth-btn-primary" onclick="login()">🚀 로그인</button>
+                <input type="text" id="username" placeholder="사용자명" value="admin">
+                <input type="password" id="password" placeholder="패스워드" value="password">
             </div>
-            
-            <div id="token-info" style="display: none;">
-                <div class="auth-status success">
-                    ✅ 로그인 성공! JWT 토큰이 자동으로 설정되었습니다.
-                </div>
-                <div class="token-info">
-                    <strong>사용자 정보:</strong><br>
-                    <span id="user-info"></span>
-                    <div class="token-preview" id="token-preview"></div>
-                    <div style="font-size: 11px; color: #718096;">
-                        만료 시간: <span id="token-expires"></span>
-                    </div>
-                </div>
-                <button class="auth-btn auth-btn-secondary" onclick="testToken()">🔍 토큰 검증</button>
-                <button class="auth-btn auth-btn-danger" onclick="logout()">🚪 로그아웃</button>
-            </div>
-            
-            <div id="auth-message"></div>
+            <button id="login-btn">로그인</button>
+            <div id="user-status">로그인되지 않음</div>
         </div>
     </div>
     
     <div id="swagger-ui"></div>
-    
-    <div id="api-test-panel">
-        <div id="api-test-header">
-            <span>🔧 API 테스트</span>
-            <button class="minimize-test-btn" onclick="toggleApiTestPanel()">−</button>
-        </div>
-        <div id="api-test-body">
-            <div class="api-test-section">
-                <h4>요청 설정</h4>
-                <input type="text" id="api-test-url" placeholder="API URL" class="api-test-input">
-                <select id="api-test-method" class="api-test-input">
-                    <option value="GET">GET</option>
-                    <option value="POST">POST</option>
-                    <option value="PUT">PUT</option>
-                    <option value="DELETE">DELETE</option>
-                    <option value="PATCH">PATCH</option>
-                </select>
-                <button class="api-test-btn api-test-btn-primary" onclick="performApiTest()">🚀 테스트</button>
-            </div>
-            
-            <div class="api-test-section">
-                <h4>요청 본문</h4>
-                <textarea id="api-test-body" class="api-test-textarea"></textarea>
-            </div>
-            
-            <div class="api-test-section">
-                <h4>응답</h4>
-                <div class="api-test-result" id="api-test-result"></div>
-            </div>
-        </div>
-    </div>
     
     <script src="https://unpkg.com/swagger-ui-dist@4.15.5/swagger-ui-bundle.js" crossorigin></script>
     <script src="https://unpkg.com/swagger-ui-dist@4.15.5/swagger-ui-standalone-preset.js" crossorigin></script>
@@ -469,11 +155,22 @@
         let currentToken = null;
         let swaggerUI = null;
         
-        // 로컬 스토리지에서 토큰 복원
+        // 초기화
         window.onload = () => {
             initSwaggerUI();
             restoreTokenFromStorage();
+            setupEventListeners();
         };
+        
+        function setupEventListeners() {
+            document.getElementById('login-btn').addEventListener('click', login);
+            document.getElementById('username').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') login();
+            });
+            document.getElementById('password').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') login();
+            });
+        }
         
         function initSwaggerUI() {
             swaggerUI = SwaggerUIBundle({
@@ -498,17 +195,6 @@
                 onComplete: function(swaggerApi, swaggerUi) {
                     console.log("Rejintech Swagger UI 로드 완료");
                     
-                    // 커스텀 로고/타이틀 추가
-                    const topbar = document.querySelector('.swagger-ui .topbar');
-                    if (topbar) {
-                        const link = topbar.querySelector('.link');
-                        if (link) {
-                            link.innerHTML = '<span style="font-size: 1.5rem; font-weight: 700;">📚 Rejintech API</span>';
-                            link.href = '/';
-                            link.target = '_blank';
-                        }
-                    }
-                    
                     // 저장된 토큰이 있으면 자동 설정
                     if (currentToken) {
                         setSwaggerAuth(currentToken);
@@ -527,13 +213,6 @@
                 <div style="text-align: center; padding: 50px; font-family: Arial, sans-serif;">
                     <h2 style="color: #e53e3e;">API 문서 로드 실패</h2>
                     <p style="color: #718096; margin: 20px 0;">OpenAPI 명세서를 불러올 수 없습니다.</p>
-                    <div style="background: #fed7d7; border: 1px solid #feb2b2; border-radius: 6px; padding: 15px; margin: 20px 0; text-align: left;">
-                        <strong>가능한 원인:</strong><br>
-                        • API 서버가 실행되지 않음<br>
-                        • /api/docs/openapi.json 경로 접근 불가<br>
-                        • CORS 정책 문제<br>
-                        • JSON 형식 오류
-                    </div>
                     <button onclick="window.location.reload()" style="background: #667eea; color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: 600;">
                         다시 시도
                     </button>
@@ -546,11 +225,11 @@
             const password = document.getElementById('password').value;
             
             if (!username || !password) {
-                showMessage('사용자명과 패스워드를 입력해주세요.', 'error');
+                updateUserStatus('사용자명과 패스워드를 입력해주세요.', 'error');
                 return;
             }
             
-            showMessage('로그인 중...', 'info');
+            updateUserStatus('로그인 중...', 'info');
             
             try {
                 const response = await fetch('/source/index.php/api/auth/login', {
@@ -565,43 +244,33 @@
                 
                 if (data.success) {
                     currentToken = data.token;
-                    
-                    // 로컬 스토리지에 저장
                     localStorage.setItem('jwt_token', currentToken);
                     localStorage.setItem('user_info', JSON.stringify(data.user));
                     
-                    // UI 업데이트
                     updateUIAfterLogin(data);
-                    
-                    // Swagger UI에 토큰 설정
                     setSwaggerAuth(currentToken);
                     
-                    showMessage('로그인 성공!', 'success');
+                    updateUserStatus(`로그인됨: ${data.user.username}`, 'success');
                 } else {
-                    showMessage(data.message || '로그인에 실패했습니다.', 'error');
+                    updateUserStatus(data.message || '로그인 실패', 'error');
                 }
             } catch (error) {
                 console.error('로그인 오류:', error);
-                showMessage('네트워크 오류가 발생했습니다.', 'error');
+                updateUserStatus('네트워크 오류', 'error');
             }
         }
         
         function updateUIAfterLogin(data) {
             document.getElementById('login-form').style.display = 'none';
-            document.getElementById('token-info').style.display = 'block';
+            document.getElementById('login-btn').style.display = 'none';
             
-            // 사용자 정보 표시
-            document.getElementById('user-info').innerHTML = 
-                `ID: ${data.user.id} | ${data.user.username} (${data.user.email})`;
-            
-            // 토큰 미리보기 (처음 20자만)
-            document.getElementById('token-preview').textContent = 
-                data.token.substring(0, 50) + '...';
-            
-            // 만료 시간 계산
-            const expiresAt = new Date(Date.now() + (data.expires_in * 1000));
-            document.getElementById('token-expires').textContent = 
-                expiresAt.toLocaleString('ko-KR');
+            // 로그아웃 버튼 추가
+            const loginControls = document.getElementById('login-controls');
+            const logoutBtn = document.createElement('button');
+            logoutBtn.id = 'logout-btn';
+            logoutBtn.textContent = '로그아웃';
+            logoutBtn.addEventListener('click', logout);
+            loginControls.appendChild(logoutBtn);
         }
         
         function setSwaggerAuth(token) {
@@ -610,51 +279,26 @@
             }
         }
         
-        async function testToken() {
-            if (!currentToken) {
-                showMessage('로그인이 필요합니다.', 'error');
-                return;
-            }
-            
-            showMessage('토큰 검증 중...', 'info');
-            
-            try {
-                const response = await fetch('/source/index.php/api/auth/verify', {
-                    method: 'POST',
-                    headers: {
-                        'Authorization': `Bearer ${currentToken}`,
-                        'Content-Type': 'application/json'
-                    }
-                });
-                
-                const data = await response.json();
-                
-                if (data.success) {
-                    showMessage('✅ 토큰이 유효합니다!', 'success');
-                } else {
-                    showMessage('❌ 토큰이 만료되었거나 유효하지 않습니다.', 'error');
-                    logout();
-                }
-            } catch (error) {
-                console.error('토큰 검증 오류:', error);
-                showMessage('토큰 검증 중 오류가 발생했습니다.', 'error');
-            }
-        }
-        
         function logout() {
             currentToken = null;
             localStorage.removeItem('jwt_token');
             localStorage.removeItem('user_info');
             
-            document.getElementById('login-form').style.display = 'block';
-            document.getElementById('token-info').style.display = 'none';
+            document.getElementById('login-form').style.display = 'flex';
+            document.getElementById('login-btn').style.display = 'block';
+            
+            // 로그아웃 버튼 제거
+            const logoutBtn = document.getElementById('logout-btn');
+            if (logoutBtn) {
+                logoutBtn.remove();
+            }
             
             // Swagger UI 인증 해제
             if (swaggerUI && swaggerUI.preauthorizeApiKey) {
                 swaggerUI.preauthorizeApiKey('bearerAuth', '');
             }
             
-            showMessage('로그아웃되었습니다.', 'info');
+            updateUserStatus('로그인되지 않음', 'info');
         }
         
         function restoreTokenFromStorage() {
@@ -666,14 +310,12 @@
                     currentToken = savedToken;
                     const userInfo = JSON.parse(savedUserInfo);
                     
-                    // UI 복원
                     updateUIAfterLogin({
                         token: savedToken,
-                        user: userInfo,
-                        expires_in: 3600 // 기본값
+                        user: userInfo
                     });
                     
-                    showMessage('이전 세션이 복원되었습니다.', 'info');
+                    updateUserStatus(`로그인됨: ${userInfo.username}`, 'success');
                 } catch (error) {
                     console.error('세션 복원 오류:', error);
                     localStorage.removeItem('jwt_token');
@@ -682,212 +324,10 @@
             }
         }
         
-        function showMessage(message, type) {
-            const messageDiv = document.getElementById('auth-message');
-            messageDiv.innerHTML = `<div class="auth-status ${type}">${message}</div>`;
-            
-            // 3초 후 자동 제거 (error 제외)
-            if (type !== 'error') {
-                setTimeout(() => {
-                    messageDiv.innerHTML = '';
-                }, 3000);
-            }
-        }
-        
-        function toggleAuthPanel() {
-            const panel = document.getElementById('auth-panel');
-            const btn = document.querySelector('.minimize-btn');
-            
-            panel.classList.toggle('minimized');
-            btn.textContent = panel.classList.contains('minimized') ? '+' : '−';
-        }
-        
-        function toggleApiTestPanel() {
-            const panel = document.getElementById('api-test-panel');
-            const btn = document.querySelector('.minimize-test-btn');
-            
-            panel.classList.toggle('minimized');
-            btn.textContent = panel.classList.contains('minimized') ? '+' : '−';
-        }
-        
-        // 엔터키로 로그인
-        document.addEventListener('DOMContentLoaded', function() {
-            document.getElementById('username').addEventListener('keypress', function(e) {
-                if (e.key === 'Enter') login();
-            });
-            document.getElementById('password').addEventListener('keypress', function(e) {
-                if (e.key === 'Enter') login();
-            });
-            
-            // API 테스트 패널 초기화
-            initApiTestPanel();
-        });
-        
-        function initApiTestPanel() {
-            // 기본 URL 설정
-            document.getElementById('api-test-url').value = '/source/index.php/api/procurement/delivery-requests';
-            document.getElementById('api-test-method').value = 'POST';
-            
-            // 기본 요청 본문 설정
-            const defaultRequest = {
-                "filterModel": {
-                    "type": ["CSO"]
-                },
-                "sortModel": {
-                    "bizName": "desc"
-                },
-                "page": 1,
-                "size": 50
-            };
-            
-            document.getElementById('api-test-body').value = JSON.stringify(defaultRequest, null, 2);
-            
-            // 프리셋 버튼들 추가
-            const bodySection = document.querySelector('#api-test-body').parentElement;
-            const presetButtons = document.createElement('div');
-            presetButtons.innerHTML = `
-                <button class="api-test-btn api-test-btn-secondary" onclick="loadPreset('basic')">기본</button>
-                <button class="api-test-btn api-test-btn-secondary" onclick="loadPreset('filter')">필터</button>
-                <button class="api-test-btn api-test-btn-secondary" onclick="loadPreset('sort')">정렬</button>
-                <button class="api-test-btn api-test-btn-secondary" onclick="loadPreset('complex')">복합</button>
-            `;
-            bodySection.insertBefore(presetButtons, document.getElementById('api-test-body'));
-        }
-        
-        function loadPreset(type) {
-            let preset = {};
-            
-            switch(type) {
-                case 'basic':
-                    preset = {
-                        "filterModel": {
-                            "type": ["CSO"]
-                        },
-                        "sortModel": {
-                            "bizName": "desc"
-                        },
-                        "page": 1,
-                        "size": 50
-                    };
-                    break;
-                    
-                case 'filter':
-                    preset = {
-                        "filterModel": {
-                            "type": ["CSO", "MAS"],
-                            "dminsttNm": "서울특별시",
-                            "dateFrom": "2024-01-01",
-                            "dateTo": "2024-12-31"
-                        },
-                        "sortModel": {
-                            "dlvrReqRcptDate": "desc"
-                        },
-                        "page": 1,
-                        "size": 100
-                    };
-                    break;
-                    
-                case 'sort':
-                    preset = {
-                        "filterModel": {
-                            "type": ["CSO"]
-                        },
-                        "sortModel": {
-                            "dlvrReqRcptDate": "desc",
-                            "incdecAmt": "desc",
-                            "bizName": "asc"
-                        },
-                        "page": 1,
-                        "size": 25
-                    };
-                    break;
-                    
-                case 'complex':
-                    preset = {
-                        "filterModel": {
-                            "type": ["CSO"],
-                            "dminsttNm": "서울특별시",
-                            "corpNm": "삼성",
-                            "dateFrom": "2024-06-01",
-                            "dateTo": "2024-06-30",
-                            "amountFrom": 1000000,
-                            "amountTo": 10000000
-                        },
-                        "sortModel": {
-                            "incdecAmt": "desc",
-                            "dlvrReqRcptDate": "desc"
-                        },
-                        "page": 1,
-                        "size": 20
-                    };
-                    break;
-            }
-            
-            document.getElementById('api-test-body').value = JSON.stringify(preset, null, 2);
-        }
-        
-        async function performApiTest() {
-            const url = document.getElementById('api-test-url').value;
-            const method = document.getElementById('api-test-method').value;
-            const bodyText = document.getElementById('api-test-body').value;
-            const resultDiv = document.getElementById('api-test-result');
-            
-            if (!url) {
-                resultDiv.textContent = '❌ URL을 입력해주세요.';
-                return;
-            }
-            
-            if (!currentToken) {
-                resultDiv.textContent = '❌ 로그인이 필요합니다.';
-                return;
-            }
-            
-            resultDiv.textContent = '🔄 요청 중...';
-            
-            try {
-                const options = {
-                    method: method,
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${currentToken}`
-                    }
-                };
-                
-                if (method !== 'GET' && bodyText.trim()) {
-                    try {
-                        JSON.parse(bodyText); // JSON 유효성 검사
-                        options.body = bodyText;
-                    } catch (jsonError) {
-                        resultDiv.textContent = `❌ JSON 형식 오류: ${jsonError.message}`;
-                        return;
-                    }
-                }
-                
-                const response = await fetch(url, options);
-                const responseText = await response.text();
-                
-                let result = `Status: ${response.status} ${response.statusText}\n\n`;
-                
-                try {
-                    const jsonData = JSON.parse(responseText);
-                    result += JSON.stringify(jsonData, null, 2);
-                } catch (e) {
-                    result += responseText;
-                }
-                
-                resultDiv.textContent = result;
-                
-                // 응답 상태에 따른 색상 변경
-                if (response.ok) {
-                    resultDiv.style.borderLeft = '4px solid #48bb78';
-                } else {
-                    resultDiv.style.borderLeft = '4px solid #f56565';
-                }
-                
-            } catch (error) {
-                resultDiv.textContent = `❌ 네트워크 오류: ${error.message}`;
-                resultDiv.style.borderLeft = '4px solid #f56565';
-            }
+        function updateUserStatus(message, type) {
+            const statusDiv = document.getElementById('user-status');
+            statusDiv.textContent = message;
+            statusDiv.className = type;
         }
     </script>
 </body>
