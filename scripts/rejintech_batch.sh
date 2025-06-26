@@ -13,6 +13,30 @@ DATE=$(date '+%Y%m%d_%H%M%S')
 LOG_FILE="$LOG_DIR/batch_$DATE.log"
 LOCK_FILE="/tmp/rejintech_batch.lock"
 
+# 색상 정의
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
+NC='\033[0m' # No Color
+
+# 로그 함수
+log_info() {
+    echo -e "${BLUE}[INFO]${NC} $1"
+}
+
+log_success() {
+    echo -e "${GREEN}[SUCCESS]${NC} $1"
+}
+
+log_warning() {
+    echo -e "${YELLOW}[WARNING]${NC} $1"
+}
+
+log_error() {
+    echo -e "${RED}[ERROR]${NC} $1"
+}
+
 # 함수 정의
 log_message() {
     echo "[$(date '+%Y-%m-%d %H:%M:%S')] $1" >> $LOG_FILE

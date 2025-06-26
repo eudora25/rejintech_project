@@ -567,7 +567,7 @@ class CI_Input {
 				$which = FILTER_FLAG_IPV6;
 				break;
 			default:
-				$which = NULL;
+				$which = 0; // Changed from NULL to 0 for PHP 8+ compatibility
 				break;
 		}
 

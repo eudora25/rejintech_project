@@ -75,7 +75,7 @@ $query_builder = TRUE;
 
 $db['default'] = array(
 	'dsn'	=> '',
-	'hostname' => 'rejintech-mariadb',
+	'hostname' => 'db',
 	'username' => 'jintech',
 	'password' => 'jin2010!!',
 	'database' => 'jintech',

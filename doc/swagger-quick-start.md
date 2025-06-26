@@ -2,196 +2,239 @@
 
 ## 개요
 
-이 가이드는 Rejintech 프로젝트에서 Swagger를 빠르게 시작하는 방법을 설명합니다.
+이 가이드는 Rejintech 프로젝트에서 Swagger UI를 사용하여 API를 테스트하는 방법을 설명합니다.
 
-## 즉시 사용 가능한 설정
+## 📊 현재 구현 상태
 
-### 1. 기본 Swagger UI 접속
+### ✅ 완전히 구현된 기능
+- **JWT 인증 시스템** - 완전 작동
+- **조달청 데이터 API** - 전체 구현 완료
+- **Swagger UI 통합** - 인터랙티브 API 테스트 환경
 
-현재 다음 파일들이 준비되어 있습니다:
-
+### 📁 준비된 파일들
 ✅ `source/swagger-ui/index.html` - Swagger UI 인터페이스  
-✅ `source/api/docs/openapi.json` - 기본 API 스펙  
-✅ `source/application/controllers/api/Test.php` - 테스트 API  
-✅ `source/.htaccess` - Apache URL rewriting (호환성 목적)  
+✅ `source/api/docs/openapi.json` - 완전한 API 스펙  
+✅ `source/application/controllers/api/Auth.php` - JWT 인증 API  
+✅ `source/application/controllers/api/Procurement.php` - 조달청 데이터 API  
 
-### 2. 바로 확인하기
+## 🚀 바로 시작하기
 
-**1단계: 컨테이너 시작**
+### 1단계: 서비스 실행
 ```bash
+# 프로젝트 디렉토리로 이동
+cd rejintech_project
+
+# Docker 컨테이너 실행
 docker-compose up -d
+
+# 실행 상태 확인
+docker-compose ps
 ```
 
-**2단계: Swagger UI 접속**
+### 2단계: Swagger UI 접속
 ```
-브라우저에서 http://localhost/swagger-ui/ 접속
-```
-
-**3단계: API 테스트**
-```
-http://localhost/api/test - 기본 API 테스트
-http://localhost/api/test/database - 데이터베이스 연결 테스트
+브라우저에서 http://localhost/source/swagger-ui/ 접속
 ```
 
-## 현재 제공되는 API
+### 3단계: API 테스트
+1. **로그인** → JWT 토큰 발급
+2. **토큰 설정** → 상단 "Authorize" 버튼 클릭
+3. **API 테스트** → 조달청 데이터 조회
 
-### 1. 기본 테스트 API
+## 🔐 인증 흐름
+
+### 1. 로그인 (JWT 토큰 발급)
+```bash
+# API 방식
+curl -X POST http://localhost/api/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"username": "admin", "password": "admin123"}'
+```
+
+**응답 예시:**
+```json
+{
+  "success": true,
+  "data": {
+    "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9...",
+    "user": {
+      "id": "1", 
+      "username": "admin",
+      "email": "admin@example.com"
+    }
+  },
+  "message": "로그인 성공"
+}
+```
+
+### 2. Swagger UI에서 토큰 설정
+1. Swagger UI 상단의 **"Authorize"** 버튼 클릭
+2. `bearerAuth` 필드에 토큰 입력 (앞에 "Bearer " 붙이지 마세요)
+3. **"Authorize"** 버튼 클릭
+
+### 3. 인증된 API 테스트
+이제 🔒 자물쇠 표시가 있는 모든 API를 테스트할 수 있습니다.
+
+## 📋 제공되는 API
+
+### 🔐 인증 관련 API
+- **POST** `/api/auth/login` - 로그인 (JWT 토큰 발급)
+- **GET** `/api/auth/verify` - 토큰 검증
+- **GET** `/api/auth/profile` - 사용자 프로필 조회
+- **POST** `/api/auth/logout` - 로그아웃
+- **POST** `/api/auth/change-password` - **비밀번호 변경** ⭐ **신규**
+- **GET** `/api/auth/login-logs` - 로그인 로그 조회
+- **GET** `/api/auth/login-statistics` - 로그인 통계
+
+### 🏢 조달청 데이터 API (메인 기능)
+- **GET** `/api/procurement/delivery-requests` - 📋 조달청 데이터 조회
+- **GET** `/api/procurement/statistics/institutions` - 📊 수요기관별 통계
+- **GET** `/api/procurement/statistics/companies` - 🏢 업체별 통계  
+- **GET** `/api/procurement/statistics/products` - 📦 품목별 통계
+- **GET** `/api/procurement/filter-options` - 🔍 필터 옵션 조회
+
+### 🔧 테스트 API (인증 불필요)
 - **GET** `/api/test` - 서버 상태 확인
 - **GET** `/api/test/database` - 데이터베이스 연결 테스트
-- **GET** `/api/test/params` - 파라미터 테스트
-- **POST** `/api/test/echo` - POST 데이터 에코 테스트
 
-### 2. 사용자 API (문서 예제)
-- **GET** `/api/users` - 사용자 목록 조회
-- **POST** `/api/users` - 새 사용자 생성
-- **GET** `/api/users/{id}` - 사용자 상세 조회
+## 🎯 주요 API 테스트 가이드
 
-## 테스트 방법
+### 조달청 데이터 조회
+```
+GET /api/procurement/delivery-requests
+```
 
-### Swagger UI에서 직접 테스트
+**주요 파라미터:**
+- `page`: 페이지 번호 (기본값: 1)
+- `size`: 페이지 크기 (기본값: 50, 최대: 100)
+- `type`: 상품 유형 (CSO: 우수제품, MAS: 일반제품)
+- `dminsttNm`: 수요기관명 (예: "서울특별시")
+- `corpNm`: 업체명 (예: "삼성전자")
+- `dateFrom`, `dateTo`: 날짜 범위 (YYYY-MM-DD)
+- `amountFrom`, `amountTo`: 금액 범위
+- `sortBy`: 정렬 필드 (bizName, dlvrReqRcptDate, incdecAmt 등)
+- `sortOrder`: 정렬 순서 (asc, desc)
 
-1. **http://localhost/swagger-ui/** 접속
-2. 원하는 API 엔드포인트 클릭
-3. "Try it out" 버튼 클릭
-4. 필요한 파라미터 입력
-5. "Execute" 버튼 클릭
+**테스트 예시:**
+1. **기본 조회**: 파라미터 없이 실행
+2. **페이징**: `page=2&size=20`
+3. **필터링**: `type=CSO&dminsttNm=서울특별시`
+4. **정렬**: `sortBy=bizName&sortOrder=asc`
 
-### 커맨드라인에서 테스트
+### 통계 API 테스트
+```
+GET /api/procurement/statistics/institutions
+GET /api/procurement/statistics/companies  
+GET /api/procurement/statistics/products
+```
+
+각 통계 API는 해당 분야별 집계 정보를 제공합니다.
+
+## 💡 커맨드라인 테스트
+
+Swagger UI 외에도 curl로 직접 테스트 가능합니다:
 
 ```bash
-# 기본 API 테스트
-curl http://localhost/api/test
-
-# 데이터베이스 연결 테스트
-curl http://localhost/api/test/database
-
-# 파라미터 테스트
-curl "http://localhost/api/test/params?name=홍길동&age=30"
-
-# POST 테스트
-curl -X POST http://localhost/api/test/echo \
+# 1. 로그인 및 토큰 저장
+TOKEN=$(curl -s -X POST http://localhost/api/auth/login \
   -H "Content-Type: application/json" \
-  -d '{"name": "홍길동", "message": "안녕하세요"}'
+  -d '{"username": "admin", "password": "admin123"}' | \
+  jq -r '.data.token')
+
+# 2. 비밀번호 변경
+curl -X POST "http://localhost/api/auth/change-password" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $TOKEN" \
+  -d '{
+    "current_password": "admin123",
+    "new_password": "newPassword123!",
+    "confirm_password": "newPassword123!"
+  }' | jq
+
+# 3. 조달청 데이터 조회
+curl -X GET "http://localhost/api/procurement/delivery-requests?page=1&size=10&type=CSO" \
+  -H "Authorization: Bearer $TOKEN" | jq
+
+# 4. 수요기관별 통계
+curl -X GET "http://localhost/api/procurement/statistics/institutions" \
+  -H "Authorization: Bearer $TOKEN" | jq
+
+# 5. 필터 옵션 조회
+curl -X GET "http://localhost/api/procurement/filter-options" \
+  -H "Authorization: Bearer $TOKEN" | jq
 ```
 
-## 다음 단계
-
-### 1. 고급 설정 (선택사항)
-
-더 고급 기능을 원한다면:
-
-**swagger-php 라이브러리 설치**
-```bash
-# 컨테이너 접속
-docker exec -it rejintech-workspace bash
-
-# Composer 업데이트
-cd /var/www/html
-composer require zircote/swagger-php:^4.0
-```
-
-### 2. 자동 문서 생성 활성화
-
-고급 설정을 완료하면:
-- PHP 어노테이션으로 API 문서 자동 생성
-- 코드와 문서 자동 동기화
-- 더 풍부한 API 스펙 정의
-
-자세한 내용은 [Swagger API 문서화 가이드](./swagger-integration.md)를 참고하세요.
-
-### 3. 실제 API 개발
-
-```php
-// 예: source/application/controllers/api/Users.php
-class Users extends CI_Controller 
-{
-    public function index() 
-    {
-        // 사용자 목록 API 구현
-        $users = $this->user_model->get_all_users();
-        
-        $response = [
-            'status' => 'success',
-            'data' => $users
-        ];
-        
-        header('Content-Type: application/json');
-        echo json_encode($response, JSON_UNESCAPED_UNICODE);
-    }
-}
-```
-
-### 4. OpenAPI 스펙 업데이트
-
-`source/api/docs/openapi.json` 파일을 수정하여:
-- 새로운 API 엔드포인트 추가
-- 스키마 정의 업데이트
-- 응답 예제 추가
-
-## 문제 해결
+## 🆘 문제 해결
 
 ### 1. Swagger UI가 로드되지 않는 경우
-
-**원인**: 정적 파일 접근 권한 문제
 ```bash
-# 권한 설정
-docker exec -it rejintech-workspace bash
-chmod -R 755 /var/www/html/swagger-ui/
+# 컨테이너 상태 확인
+docker-compose ps
+
+# Nginx 로그 확인
+docker exec -it rejintech-workspace tail -f /var/log/nginx/error.log
 ```
 
-### 2. API가 응답하지 않는 경우
+### 2. 인증 오류 (401 Unauthorized)
+**확인사항:**
+1. JWT 토큰이 올바르게 발급되었는지
+2. Authorize 설정에서 토큰이 정확히 입력되었는지  
+3. 토큰이 만료되지 않았는지 (1시간 유효)
 
-**확인사항**:
-1. 컨테이너 상태: `docker-compose ps`
-2. Nginx 로그: `docker exec -it rejintech-workspace tail -f /var/log/nginx/error.log`
-3. URL 확인: `http://localhost/api/test` (정확한 경로)
-
-### 3. CORS 오류
-
-개발 환경에서는 이미 CORS가 설정되어 있습니다. 프로덕션에서는 필요에 따라 제한하세요.
-
-## 웹서버 설정 정보
-
-### 현재 환경 (Nginx)
-현재 설정으로도 Swagger가 작동하지만, 더 나은 URL을 원한다면 nginx.conf를 업데이트하세요:
-
-### .htaccess 파일 (Apache 호환성)
-**현재 상태**: `source/.htaccess` 파일이 존재하며 CodeIgniter URL rewriting을 지원합니다.
-
-```apache
-<IfModule mod_rewrite.c>
-    RewriteEngine On
-    RewriteBase /
-    RewriteCond $1 !^(index\.php|images|...|swagger-ui|api/docs)
-    RewriteRule ^(.*)$ /index.php/$1 [L]
-</IfModule>
+```bash
+# 토큰 검증
+curl -X GET http://localhost/api/auth/verify \
+  -H "Authorization: Bearer YOUR_TOKEN"
 ```
 
-**역할**: Apache 환경으로 이전시 URL rewriting 자동 지원
+### 3. API 응답 오류
+```bash
+# 서버 로그 확인
+docker-compose logs -f rejintech-workspace
 
-```nginx
-# API 문서 경로
-location /docs {
-    alias /var/www/html/swagger-ui;
-    index index.html;
-}
-
-# API 엔드포인트
-location /api/ {
-    try_files $uri $uri/ /index.php?$query_string;
-}
+# 데이터베이스 연결 확인
+curl http://localhost/api/test/database
 ```
 
-## 요약
+### 4. CORS 오류
+현재 개발 환경에서는 CORS가 허용되도록 설정되어 있습니다.
 
-✅ **현재 상태**: 기본 Swagger UI와 테스트 API가 준비됨  
-✅ **접속**: http://localhost/swagger-ui/  
-✅ **테스트**: http://localhost/api/test  
-⚠️ **다음**: 실제 비즈니스 API 개발 및 문서화  
+## 📊 데이터 현황
 
-더 자세한 정보는 [전체 Swagger 통합 가이드](./swagger-integration.md)를 참고하세요.
+### 현재 저장된 데이터
+- **납품요구 항목**: 992건
+- **수요기관**: 147개
+- **계약업체**: 280개  
+- **물품 종류**: 758개
+- **총 금액**: ₩6,237,229,274
+
+### 데이터 특성
+- **우수제품(CSO)**: 70건 (7.06%)
+- **일반제품(MAS)**: 922건 (92.94%)
+- **주요 지역**: 서울, 경기, 부산 등
+- **주요 품목**: 컴퓨터용품, 사무용품, 의료기기 등
+
+## 🎯 실제 사용 시나리오
+
+### 시나리오 1: 조달 관리자
+1. **로그인** → admin/admin123
+2. **전체 현황 파악** → `/api/procurement/delivery-requests?page=1&size=50`
+3. **특정 기관 조회** → `dminsttNm=서울특별시`
+4. **금액별 분석** → `/api/procurement/statistics/institutions`
+
+### 시나리오 2: 업체 담당자
+1. **로그인** 후 토큰 설정
+2. **우수제품 조회** → `type=CSO`
+3. **업체별 통계** → `/api/procurement/statistics/companies`
+4. **특정 업체 검색** → `corpNm=삼성전자`
+
+### 시나리오 3: 데이터 분석가
+1. **필터 옵션 확인** → `/api/procurement/filter-options`
+2. **기간별 분석** → `dateFrom=2024-01-01&dateTo=2024-12-31`
+3. **금액 범위 분석** → `amountFrom=1000000&amountTo=10000000`
+4. **품목별 통계** → `/api/procurement/statistics/products`
 
 ---
 
-**빠른 시작 완료!** 🎉  
-이제 Swagger UI에서 API를 테스트하고 개발을 시작할 수 있습니다. 
+**🎉 Swagger UI 준비 완료!** 🚀  
+이제 http://localhost/source/swagger-ui/에서 모든 API를 테스트할 수 있습니다. 

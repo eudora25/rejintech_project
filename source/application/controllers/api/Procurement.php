@@ -128,90 +128,100 @@ class Procurement extends CI_Controller {
     }
     
     /**
-     * 조달청 데이터 전체 리스트 조회 API
+     * 조달청 납품요구 데이터 조회 API (엑셀 스펙 준수)
      * GET /api/procurement/delivery-requests
-     * Query Parameters로 모든 필터링 처리
      * 
-     * PowerPoint 스토리보드 요구사항:
-     * 1. 기간 필터링: dlvrReqRcptDate ~ dlvrTmlmtDate 사이 값 조회
-     * 2. 지역 매칭: 사업자번호로 2번째 API와 매칭하여 지역 정보 가져오기
-     * 3. 모든 데이터 표시: 합산 없이 모든 레코드 표기
+     * 엑셀 파일 "요청 API 목록" 시트의 스펙을 정확히 반영한 API입니다.
      * 
      * @OA\Get(
      *     path="/api/procurement/delivery-requests",
      *     tags={"Procurement"},
-     *     summary="납품요구 데이터 조회",
-     *     description="조달청 납품요구 데이터를 조회합니다. 기간, 지역, 업체명 등 다양한 조건으로 필터링 가능합니다.",
+     *     summary="납품요구 데이터 조회 (엑셀 스펙 준수)",
+     *     description="조달청 납품요구 데이터를 조회합니다. 엑셀 파일의 API 스펙을 정확히 반영했습니다.",
      *     security={{"bearerAuth":{}}},
      *     @OA\Parameter(
-     *         name="dlvrReqRcptDateFrom",
+     *         name="startDate",
      *         in="query",
      *         description="납품요구접수일자 시작일 (YYYY-MM-DD)",
      *         required=false,
-     *         @OA\Schema(type="string", format="date", example="2025-01-01")
+     *         @OA\Schema(type="string", format="date", example="2024-01-01")
      *     ),
      *     @OA\Parameter(
-     *         name="dlvrReqRcptDateTo",
-     *         in="query", 
+     *         name="endDate",
+     *         in="query",
      *         description="납품요구접수일자 종료일 (YYYY-MM-DD)",
      *         required=false,
-     *         @OA\Schema(type="string", format="date", example="2025-12-31")
+     *         @OA\Schema(type="string", format="date", example="2024-01-31")
      *     ),
      *     @OA\Parameter(
-     *         name="dlvrTmlmtDateFrom",
+     *         name="exclcProdctYn",
      *         in="query",
-     *         description="납품일자종료일 시작일 (YYYY-MM-DD)",
+     *         description="구분(조달/마스/전체) - 우수제품여부 값이 'Y'이면 '조달', 'N'이면 '마스'",
      *         required=false,
-     *         @OA\Schema(type="string", format="date", example="2025-01-01")
-     *     ),
-     *     @OA\Parameter(
-     *         name="dlvrTmlmtDateTo",
-     *         in="query",
-     *         description="납품일자종료일 종료일 (YYYY-MM-DD)",
-     *         required=false,
-     *         @OA\Schema(type="string", format="date", example="2025-12-31")
-     *     ),
-     *     @OA\Parameter(
-     *         name="dminsttNm",
-     *         in="query",
-     *         description="수요기관명",
-     *         required=false,
-     *         @OA\Schema(type="string", example="서울특별시")
-     *     ),
-     *     @OA\Parameter(
-     *         name="dminsttRgnNm",
-     *         in="query",
-     *         description="수요기관지역",
-     *         required=false,
-     *         @OA\Schema(type="string", example="서울")
-     *     ),
-     *     @OA\Parameter(
-     *         name="corpNm",
-     *         in="query",
-     *         description="업체명",
-     *         required=false,
-     *         @OA\Schema(type="string", example="삼성전자")
+     *         @OA\Schema(type="string", example="조달")
      *     ),
      *     @OA\Parameter(
      *         name="prdctClsfcNoNm",
      *         in="query",
      *         description="품명",
      *         required=false,
-     *         @OA\Schema(type="string", example="컴퓨터")
+     *         @OA\Schema(type="string", example="영상감시장치")
      *     ),
      *     @OA\Parameter(
-     *         name="exclcProdctYn",
+     *         name="dtilPrdctClsfcNoNm",
      *         in="query",
-     *         description="우수제품여부 (Y/N)",
+     *         description="세부품명",
      *         required=false,
-     *         @OA\Schema(type="string", enum={"Y", "N"}, example="Y")
+     *         @OA\Schema(type="string", example="CCTV")
      *     ),
      *     @OA\Parameter(
-     *         name="includeRegionMatch",
+     *         name="dminsttRgnNm",
      *         in="query",
-     *         description="지역 매칭 포함 여부 (사업자번호로 2번째 API와 매칭)",
+     *         description="수요기관지역(대한민국의 행정구역명 고정값)",
      *         required=false,
-     *         @OA\Schema(type="boolean", example=true)
+     *         @OA\Schema(type="string", example="경기도")
+     *     ),
+     *     @OA\Parameter(
+     *         name="dminsttNm",
+     *         in="query",
+     *         description="수요기관",
+     *         required=false,
+     *         @OA\Schema(type="string", example="전북특별자치도")
+     *     ),
+     *     @OA\Parameter(
+     *         name="corpNm",
+     *         in="query",
+     *         description="계약업체",
+     *         required=false,
+     *         @OA\Schema(type="string", example="(주)지인테크")
+     *     ),
+     *     @OA\Parameter(
+     *         name="dlvrReqNmSearch",
+     *         in="query",
+     *         description="사업명(사용자 입력 검색)",
+     *         required=false,
+     *         @OA\Schema(type="string", example="바라산휴양림팀 CCTV 조달 구매 계약")
+     *     ),
+     *     @OA\Parameter(
+     *         name="corpNameSearch",
+     *         in="query",
+     *         description="계약업체명(사용자 입력 검색)",
+     *         required=false,
+     *         @OA\Schema(type="string", example="주식회사 비알인포텍")
+     *     ),
+     *     @OA\Parameter(
+     *         name="prdctClsfcNoNmSearch",
+     *         in="query",
+     *         description="품명(사용자 입력 검색)",
+     *         required=false,
+     *         @OA\Schema(type="string", example="감시장치")
+     *     ),
+     *     @OA\Parameter(
+     *         name="prdctIdntNoNmSearch",
+     *         in="query",
+     *         description="품목(사용자 입력 검색)",
+     *         required=false,
+     *         @OA\Schema(type="string", example="렌즈")
      *     ),
      *     @OA\Parameter(
      *         name="page",
@@ -221,9 +231,9 @@ class Procurement extends CI_Controller {
      *         @OA\Schema(type="integer", minimum=1, example=1)
      *     ),
      *     @OA\Parameter(
-     *         name="size",
+     *         name="pageSize",
      *         in="query",
-     *         description="페이지 크기",
+     *         description="페이지당 데이터 수",
      *         required=false,
      *         @OA\Schema(type="integer", minimum=1, maximum=100, example=50)
      *     ),
@@ -232,7 +242,7 @@ class Procurement extends CI_Controller {
      *         in="query",
      *         description="정렬 기준 필드",
      *         required=false,
-     *         @OA\Schema(type="string", enum={"dlvrReqRcptDate", "incdecAmt", "dminsttNm", "corpNm"}, example="dlvrReqRcptDate")
+     *         @OA\Schema(type="string", example="dlvrReqRcptDate")
      *     ),
      *     @OA\Parameter(
      *         name="sortOrder",
@@ -248,28 +258,69 @@ class Procurement extends CI_Controller {
      *             @OA\Property(property="success", type="boolean", example=true),
      *             @OA\Property(property="message", type="string", example="조달청 데이터 조회 성공"),
      *             @OA\Property(property="data", type="object",
-     *                 @OA\Property(property="page", type="integer", example=1),
-     *                 @OA\Property(property="size", type="integer", example=50),
-     *                 @OA\Property(property="total", type="integer", example=1000),
-     *                 @OA\Property(property="totalAmount", type="number", example=50000000),
+     *                 @OA\Property(property="page", type="integer", example=5),
+     *                 @OA\Property(property="pageSize", type="integer", example=50),
+     *                 @OA\Property(property="total", type="string", example="1"),
+     *                 @OA\Property(property="totalAmount", type="number", example=2310708400),
+     *                 @OA\Property(property="jodalTotalAmount", type="number", example=1503059300),
+     *                 @OA\Property(property="masTotalAmount", type="number", example=807649100),
      *                 @OA\Property(property="items", type="array",
      *                     @OA\Items(
-     *                         @OA\Property(property="dlvrReqRcptDate", type="string", example="2025-06-23"),
-     *                         @OA\Property(property="dlvrTmlmtDate", type="string", example="2025-06-30"),
-     *                         @OA\Property(property="dminsttNm", type="string", example="서울특별시"),
-     *                         @OA\Property(property="dminsttRgnNm", type="string", example="서울"),
-     *                         @OA\Property(property="corpNm", type="string", example="삼성전자"),
-     *                         @OA\Property(property="rgnNm", type="string", example="경기"),
-     *                         @OA\Property(property="dlvrReqNm", type="string", example="컴퓨터 납품"),
-     *                         @OA\Property(property="prdctClsfcNoNm", type="string", example="컴퓨터"),
-     *                         @OA\Property(property="prdctIdntNo", type="string", example="COMP001"),
-     *                         @OA\Property(property="prdctIdntNoNm", type="string", example="노트북"),
+     *                         @OA\Property(property="exclcProdctYn", type="string", example="조달"),
+     *                         @OA\Property(property="dlvrReqRcptDate", type="string", example="2024-01-05"),
+     *                         @OA\Property(property="dminsttNm", type="string", example="경기도 양평군 환경사업소"),
+     *                         @OA\Property(property="dminsttRgnNm", type="string", example="경기도 양평군"),
+     *                         @OA\Property(property="corpNm", type="string", example="(주)지인테크"),
+     *                         @OA\Property(property="dlvrReqNm", type="string", example="관급자재 (영상감시설비) 구입(지평 - 정보통신)"),
+     *                         @OA\Property(property="prdctClsfcNoNm", type="string", example="영상감시장치"),
+     *                         @OA\Property(property="dtilPrdctClsfcNoNm", type="string", example="CCTV"),
+     *                         @OA\Property(property="prdctIdntNo", type="string", example="123456"),
+     *                         @OA\Property(property="prdctIdntNoNm", type="string", example="렌즈"),
      *                         @OA\Property(property="incdecQty", type="integer", example=10),
-     *                         @OA\Property(property="incdecAmt", type="number", example=5000000),
-     *                         @OA\Property(property="exclcProdctYn", type="string", example="Y")
+     *                         @OA\Property(property="prdctUprc", type="number", example=-3516000),
+     *                         @OA\Property(property="incdecAmt", type="number", example=1500000),
+     *                         @OA\Property(property="dminsttCd", type="number", example=4170033)
+     *                     )
+     *                 ),
+     *                 @OA\Property(property="filterOptions", type="object",
+     *                     @OA\Property(property="prdctClsfcNoNms", type="array",
+     *                         @OA\Items(type="object",
+     *                             @OA\Property(property="value", type="string", example="영상감시장치"),
+     *                             @OA\Property(property="label", type="string", example="영상감시장치")
+     *                         )
+     *                     ),
+     *                     @OA\Property(property="dminsttNms", type="array",
+     *                         @OA\Items(type="object",
+     *                             @OA\Property(property="value", type="string", example="경기도청"),
+     *                             @OA\Property(property="label", type="string", example="경기도청")
+     *                         )
+     *                     ),
+     *                     @OA\Property(property="corpNms", type="array",
+     *                         @OA\Items(type="object",
+     *                             @OA\Property(property="value", type="string", example="(주)지인테크"),
+     *                             @OA\Property(property="label", type="string", example="(주)지인테크")
+     *                         )
      *                     )
      *                 )
      *             ),
+     *             @OA\Property(property="timestamp", type="string", example="2025-06-23T10:30:00+00:00")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=400,
+     *         description="파라미터 오류",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=false),
+     *             @OA\Property(property="message", type="string", example="잘못된 파라미터 입니다"),
+     *             @OA\Property(property="timestamp", type="string", example="2025-06-23T10:30:00+00:00")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="서버 내부 오류",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=false),
+     *             @OA\Property(property="message", type="string", example="데이터를 불러오지 못했습니다"),
      *             @OA\Property(property="timestamp", type="string", example="2025-06-23T10:30:00+00:00")
      *         )
      *     )
@@ -282,106 +333,93 @@ class Procurement extends CI_Controller {
         
         // 토큰 검증
         $decoded_token = $this->verify_token();
-        if (!$decoded_token) return; // 에러는 verify_token에서 처리됨
+        if (!$decoded_token) {
+            // verify_token 내부에서 이미 에러 응답 처리를 하므로 별도 처리 불필요
+            return;
+        }
+
+        // GET 파라미터 수집
+        $params = $this->input->get();
+
+        // 파라미터 이름 변환 (pageSize -> size)
+        if (isset($params['pageSize'])) {
+            $params['size'] = $params['pageSize'];
+            unset($params['pageSize']);
+        }
+        
+        // 모델 호출 부분을 v2로 변경
+        $data = $this->Procurement_model->get_delivery_requests_v2($params);
+
+        if ($data) {
+            // API 호출 로그 기록 (성공)
+            $this->log_api_call('GET /api/procurement/delivery-requests', 'GET', $decoded_token->user_id, 'SUCCESS');
+            $this->output_success($data, '납품요구 데이터 조회 성공');
+        } else {
+            // API 호출 로그 기록 (실패)
+            $this->log_api_call('GET /api/procurement/delivery-requests', 'GET', $decoded_token->user_id, 'FAILED', '데이터 조회 실패');
+            $this->output_error('데이터를 조회하는 데 실패했습니다.', 500);
+        }
+    }
+    
+    /**
+     * 디버그용 API (토큰 검증 없음) - 개발 환경에서만 사용
+     * GET /api/procurement/debug-delivery-requests
+     */
+    public function debug_delivery_requests() {
+        if ($this->input->method() !== 'get') {
+            return $this->output_error('GET 요청만 허용됩니다.', 405);
+        }
         
         try {
-            // 기본 구조 초기화
-            $params = [];
-            
-            // Query Parameters 처리
-            $params['page'] = (int)($this->input->get('page') ?: 1);
-            $params['size'] = (int)($this->input->get('size') ?: 50);
-            
-            // 페이지 크기 제한
-            if ($params['size'] > 100) {
-                $params['size'] = 100;
-            }
-            if ($params['page'] < 1) {
-                $params['page'] = 1;
-            }
-            
-            // PowerPoint 요구사항에 따른 필터 파라미터 처리
-            $filter_mappings = [
-                // 기간 필터링 (From/To 방식)
-                'dlvrReqRcptDateFrom' => 'dlvrReqRcptDateFrom',
-                'dlvrReqRcptDateTo' => 'dlvrReqRcptDateTo', 
-                'dlvrTmlmtDateFrom' => 'dlvrTmlmtDateFrom',
-                'dlvrTmlmtDateTo' => 'dlvrTmlmtDateTo',
-                
-                // 기본 필터들
-                'dminsttNm' => 'dminsttNm',           // 수요기관명
-                'dminsttRgnNm' => 'dminsttRgnNm',     // 수요기관지역
-                'corpNm' => 'corpNm',                 // 업체명
-                'dlvrReqNm' => 'dlvrReqNm',           // 납품요구건명
-                'prdctClsfcNoNm' => 'prdctClsfcNoNm', // 품명
-                'prdctIdntNo' => 'prdctIdntNo',       // 물품식별번호
-                'exclcProdctYn' => 'exclcProdctYn',   // 우수제품여부
-                
-                // 지역 매칭 옵션
-                'includeRegionMatch' => 'includeRegionMatch',
-                
-                // 기존 호환성
-                'type' => 'types',
-                'dateFrom' => 'dateFrom',
-                'dateTo' => 'dateTo',
-                'amountFrom' => 'amountFrom',
-                'amountTo' => 'amountTo'
+            // 간단한 테스트용 파라미터
+            $params = [
+                'page' => 1,
+                'size' => 3  // 적은 수의 레코드만 조회
             ];
-            
-            foreach ($filter_mappings as $query_key => $param_key) {
-                $value = $this->input->get($query_key);
-                if ($value !== null && $value !== '') {
-                    if ($query_key === 'type') {
-                        // type은 배열로 변환 (단일 값이지만 모델에서 배열로 처리)
-                        $params[$param_key] = [$value];
-                    } elseif ($query_key === 'includeRegionMatch') {
-                        // boolean 변환
-                        $params[$param_key] = filter_var($value, FILTER_VALIDATE_BOOLEAN);
-                    } else {
-                        $params[$param_key] = $value;
-                    }
-                }
-            }
-            
-            // 정렬 처리
-            $sortBy = $this->input->get('sortBy');
-            $sortOrder = $this->input->get('sortOrder') ?: 'desc';
-            
-            if ($sortBy && in_array($sortBy, ['dlvrReqRcptDate', 'incdecAmt', 'dminsttNm', 'corpNm', 'dlvrTmlmtDate'])) {
-                $params['sortModel'] = [$sortBy => $sortOrder];
-            }
             
             // 데이터 조회
             $result = $this->Procurement_model->get_delivery_requests($params);
             
-            // PowerPoint 요구사항에 맞게 응답 구조 조정
+            // 디버그 정보 포함한 응답
+            $debug_info = [
+                'query_result_keys' => array_keys($result),
+                'data_count' => count($result['data'] ?? []),
+                'first_item_keys' => !empty($result['data']) ? array_keys($result['data'][0]) : [],
+                'first_item_sample' => !empty($result['data']) ? $result['data'][0] : null
+            ];
+            
             $response_data = [
                 'page' => $result['page'],
-                'size' => $result['size'], 
+                'pageSize' => $result['size'],
                 'total' => $result['total'],
-                'totalAmount' => $result['totalAmount'], // 전체 금액
-                'items' => $result['data'], // data -> items로 변경 (PowerPoint 구조에 맞게)
-                
-                // 통계 정보 (기존 호환성)
+                'totalAmount' => $result['totalAmount'],
                 'jodalTotalAmount' => $result['jodalTotalAmount'] ?? 0,
                 'masTotalAmount' => $result['masTotalAmount'] ?? 0,
-                
-                // 필터 옵션 (기존 호환성)
-                'filterOptions' => [
-                    'prdctClsfcNoNm' => $result['filterPrdctClsfcNoNm'] ?? [],
-                    'dminsttNm' => $result['filterDminsttNm'] ?? [],
-                    'corpNm' => $result['filterCorpNm'] ?? []
-                ]
+                'items' => array_map(function($item) {
+                    return [
+                        'exclcProdctYn' => $item['exclcProdctYn'] ?? null,
+                        'dlvrReqRcptDate' => $item['dlvrReqRcptDate'] ?? null,
+                        'dminsttNm' => $item['dminsttNm'] ?? null,
+                        'dminsttRgnNm' => $item['dminsttRgnNm'] ?? null,
+                        'corpNm' => $item['corpNm'] ?? null,
+                        'dlvrReqNm' => $item['dlvrReqNm'] ?? null,
+                        'prdctClsfcNoNm' => $item['prdctClsfcNoNm'] ?? null,
+                        'dtilPrdctClsfcNoNm' => $item['dtilPrdctClsfcNoNm'] ?? null,
+                        'prdctIdntNo' => $item['prdctIdntNo'] ?? null,
+                        'prdctIdntNoNm' => $item['prdctIdntNoNm'] ?? null,
+                        'incdecQty' => $item['incdecQty'] ?? null,
+                        'prdctUprc' => $item['prdctUprc'] ?? null,
+                        'incdecAmt' => $item['incdecAmt'] ?? null,
+                        'dminsttCd' => $item['dminsttCd'] ?? null,
+                    ];
+                }, $result['data']),
+                'debug' => $debug_info
             ];
-
-            // API 호출 기록
-            $this->log_api_call('/api/procurement/delivery-requests', 'GET', $decoded_token->user_id);
             
-            $this->output_success($response_data, '조달청 데이터 조회 성공');
+            $this->output_success($response_data, '디버그 조회 성공');
             
         } catch (Exception $e) {
-            $this->log_api_call('/api/procurement/delivery-requests', 'GET', $decoded_token->user_id ?? null, 'error', $e->getMessage());
-            return $this->output_error('데이터 조회 중 오류가 발생했습니다: ' . $e->getMessage(), 500);
+            return $this->output_error('디버그 조회 실패: ' . $e->getMessage(), 500);
         }
     }
     
@@ -493,37 +531,37 @@ class Procurement extends CI_Controller {
         if (!$decoded_token) return;
         
         try {
-            // PowerPoint 요구사항에 따른 파라미터 처리
+            // 필수 파라미터 처리
             $params = [];
             
-            // 페이징 파라미터 처리
+            // 필수 파라미터: page, size만 필수로 처리
             $page = $this->input->get('page');
             $size = $this->input->get('size');
             
             $params['page'] = $page ? max(1, (int)$page) : 1;
             $params['size'] = $size ? max(1, min(100, (int)$size)) : 10; // 최대 100개로 제한
             
-            // 연도 필터 (PowerPoint 요구사항: 납품요구접수일자에서 연도만)
+            // 연도 필터는 선택사항으로 변경 (기본값 제거)
             $year = $this->input->get('year');
-            if ($year) {
+            if ($year && $year !== '' && $year !== 'null') {
                 $params['year'] = (int)$year;
             } else {
-                // 기본값: 현재 연도
+                // 기본값: 현재 연도 (초기 검색용)
                 $params['year'] = (int)date('Y');
             }
             
-            // PowerPoint 요구사항 필터들
-            $filter_mappings = [
+            // 선택적 필터 파라미터들 (모두 선택사항)
+            $optional_filter_mappings = [
                 'dminsttNm' => 'dminsttNm',           // 수요기관명 기준 필터
                 'dminsttRgnNm' => 'dminsttRgnNm',     // 수요기관지역
                 'exclcProdctYn' => 'exclcProdctYn',   // 우수제품여부 필터
                 'includePrevYear' => 'includePrevYear', // 전년 대비 증감률 계산 포함
                 
-                // 추가 필터들
+                // 추가 필터들 (선택사항)
                 'corpNm' => 'corpNm',
                 'prdctClsfcNoNm' => 'prdctClsfcNoNm',
                 
-                // 기존 호환성
+                // 기존 호환성 (선택사항)
                 'dlvrReqRcptDate' => 'dlvrReqRcptDate',
                 'dateFrom' => 'dateFrom',
                 'dateTo' => 'dateTo',
@@ -531,9 +569,10 @@ class Procurement extends CI_Controller {
                 'amountTo' => 'amountTo'
             ];
             
-            foreach ($filter_mappings as $query_key => $param_key) {
+            // 필터 파라미터는 값이 존재할 때만 적용 (초기 검색시에는 적용 안됨)
+            foreach ($optional_filter_mappings as $query_key => $param_key) {
                 $value = $this->input->get($query_key);
-                if ($value !== null && $value !== '') {
+                if ($value !== null && $value !== '' && $value !== 'null') {
                     if ($query_key === 'includePrevYear') {
                         $params[$param_key] = filter_var($value, FILTER_VALIDATE_BOOLEAN);
                     } else {
@@ -542,7 +581,7 @@ class Procurement extends CI_Controller {
                 }
             }
             
-            // 기본적으로 전년 대비 계산 포함
+            // 전년 대비 계산은 기본적으로 포함 (초기 검색용)
             if (!isset($params['includePrevYear'])) {
                 $params['includePrevYear'] = true;
             }
@@ -562,13 +601,17 @@ class Procurement extends CI_Controller {
                 'growthRate' => $result['growthRate'] ?? 0,
                 'institutions' => $result['institutions'] ?? [],
                 
-                // 필터 정보 (참고용)
-                'filters' => [
-                    'year' => $params['year'],
+                // 현재 적용된 필터 정보 (값이 있을 때만 표시)
+                'appliedFilters' => array_filter([
+                    'year' => $params['year'] ?? null,
                     'dminsttNm' => $params['dminsttNm'] ?? null,
                     'dminsttRgnNm' => $params['dminsttRgnNm'] ?? null,
-                    'exclcProdctYn' => $params['exclcProdctYn'] ?? null
-                ]
+                    'exclcProdctYn' => $params['exclcProdctYn'] ?? null,
+                    'corpNm' => $params['corpNm'] ?? null,
+                    'prdctClsfcNoNm' => $params['prdctClsfcNoNm'] ?? null
+                ], function($value) {
+                    return $value !== null && $value !== '';
+                })
             ];
 
             // API 호출 기록

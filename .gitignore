@@ -1,0 +1,5 @@
+source/application/cache
+source/application/logs
+mariadb_data/
+*.pem
+/source/user_guide/ 

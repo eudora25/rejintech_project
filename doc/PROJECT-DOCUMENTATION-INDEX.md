@@ -41,6 +41,13 @@
 
 ### 🏗️ 3. 시스템 설계 및 분석
 
+#### 🏛️ **아키텍처**
+- **[DATA-PROCESSING-ARCHITECTURE.md](DATA-PROCESSING-ARCHITECTURE.md)** (Size, Lines) ⭐ **매우 중요**
+  - 🚀 **데이터 처리 아키텍처 가이드**
+  - Staging → Normalization → Serving 3단계 파이프라인 정의
+  - API 성능 및 데이터 무결성 보장을 위한 핵심 규칙
+  - 모든 개발자는 작업 전 반드시 이 문서를 숙지해야 합니다.
+
 #### 📊 요구사항 분석
 - **[API-REQUIREMENTS-ANALYSIS.md](API-REQUIREMENTS-ANALYSIS.md)** (7.4KB, 273줄)
   - 📋 **API 요구사항 상세 분석**
@@ -106,9 +113,10 @@
 3. **[swagger-quick-start.md](swagger-quick-start.md)** - API 테스트 방법
 
 ### 🏗️ 시스템 설계를 이해하려는 경우
-1. **[API-REQUIREMENTS-ANALYSIS.md](API-REQUIREMENTS-ANALYSIS.md)** - 요구사항 파악
-2. **[API-DATABASE-DESIGN.md](API-DATABASE-DESIGN.md)** - 데이터베이스 구조
-3. **[실적사이트 개발 (스토리보드).pptx](실적사이트 개발 (스토리보드).pptx)** - UI/UX 설계
+1. **[DATA-PROCESSING-ARCHITECTURE.md](DATA-PROCESSING-ARCHITECTURE.md)** - **반드시 먼저 읽으세요!**
+2. **[API-REQUIREMENTS-ANALYSIS.md](API-REQUIREMENTS-ANALYSIS.md)** - 요구사항 파악
+3. **[API-DATABASE-DESIGN.md](API-DATABASE-DESIGN.md)** - 데이터베이스 구조
+4. **[실적사이트 개발 (스토리보드).pptx](실적사이트 개발 (스토리보드).pptx)** - UI/UX 설계
 
 ### 🔐 보안 관련 작업
 1. **[token-system-guide.md](token-system-guide.md)** - 토큰 시스템 이해
