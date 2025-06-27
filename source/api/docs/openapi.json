@@ -12,7 +12,7 @@
   "servers": [
     {
       "url": "http://localhost",
-      "description": "개발 서버"
+      "description": "로컬 개발 서버"
     },
     {
       "url": "https://api.rejintech.com",
@@ -1163,7 +1163,7 @@
           },
           {
             "name": "size",
-            "in": "query",
+            "in": "query", 
             "description": "페이지 당 항목 수",
             "schema": {
               "type": "integer",
@@ -1636,22 +1636,22 @@
                 "items": {"$ref": "#/components/schemas/ProcurementItem"}
               },
               "prdctClsfcNoNms": {
-                "type": "array",
-                "description": "품명 필터 옵션",
-                "items": {"type": "string"},
-                "example": ["컴퓨터", "사무용품", "기계장비"]
-              },
+                    "type": "array",
+                    "description": "품명 필터 옵션",
+                    "items": {"type": "string"},
+                    "example": ["컴퓨터", "사무용품", "기계장비"]
+                  },
               "dminsttNms": {
-                "type": "array",
-                "description": "수요기관명 필터 옵션",
-                "items": {"type": "string"},
-                "example": ["서울특별시", "부산광역시", "대구광역시"]
-              },
+                    "type": "array",
+                    "description": "수요기관명 필터 옵션",
+                    "items": {"type": "string"},
+                    "example": ["서울특별시", "부산광역시", "대구광역시"]
+                  },
               "corpNms": {
-                "type": "array",
+                    "type": "array",
                 "description": "계약업체명 필터 옵션",
-                "items": {"type": "string"},
-                "example": ["삼성전자", "LG전자", "SK하이닉스"]
+                    "items": {"type": "string"},
+                    "example": ["삼성전자", "LG전자", "SK하이닉스"]
               }
             }
           },
@@ -1703,56 +1703,56 @@
           "timestamp": {"type": "string", "format": "date-time"}
         }
       },
-      "InstitutionStatisticsResponse": {
-        "type": "object",
-        "properties": {
-          "success": {"type": "boolean", "example": true},
-          "message": {"type": "string", "example": "수요기관별 통계 조회 성공"},
-          "data": {
-            "type": "object",
-            "properties": {
-              "page": {"type": "integer", "description": "페이지 번호", "example": 1},
-              "size": {"type": "integer", "description": "페이지 크기", "example": 10},
-              "total": {"type": "integer", "description": "전체 데이터 수", "example": 147},
-              "year": {"type": "integer", "description": "기준 연도", "example": 2025},
-              "totalInstitutions": {"type": "integer", "description": "전체 수요기관 수", "example": 147},
-              "totalAmount": {"type": "number", "description": "전체 증감금액 합산", "example": 6237229274},
-              "prevYearAmount": {"type": "number", "description": "전년 실적", "example": 0},
-              "growthRate": {"type": "number", "description": "전년 대비 증감률(%)", "example": 0},
-              "institutions": {
-                "type": "array",
-                "items": {
-                  "type": "object",
-                  "properties": {
-                    "dminsttNm": {"type": "string", "description": "수요기관명", "example": "서울특별시"},
-                    "dminsttRgnNm": {"type": "string", "description": "수요기관지역", "example": "서울"},
-                    "dminsttCd": {"type": "string", "description": "수요기관코드", "example": "ORG001"},
-                    "currentAmount": {"type": "number", "description": "당해년도 증감금액", "example": 5000000000},
-                    "prevAmount": {"type": "number", "description": "전년도 증감금액", "example": 4500000000},
-                    "growthRate": {"type": "number", "description": "증감률(%)", "example": 11.11},
-                    "deliveryCount": {"type": "integer", "description": "납품 건수", "example": 150},
-                    "exclcProdctAmount": {"type": "number", "description": "우수제품 금액", "example": 3000000000},
-                    "generalProdctAmount": {"type": "number", "description": "일반제품 금액", "example": 2000000000},
-                    "exclcProdctYn": {"type": "string", "description": "주요 제품 유형", "example": "Y"}
-                  }
-                }
-              },
-              "appliedFilters": {
-                "type": "object",
-                "description": "현재 적용된 필터 정보 (값이 있을 때만 표시)",
-                "properties": {
-                  "year": {"type": "integer", "example": 2025},
-                  "dminsttNm": {"type": "string", "example": "서울특별시"},
-                  "dminsttRgnNm": {"type": "string", "example": "서울"},
-                  "exclcProdctYn": {"type": "string", "example": "Y"},
-                  "corpNm": {"type": "string", "example": "삼성전자"},
-                  "prdctClsfcNoNm": {"type": "string", "example": "컴퓨터"}
-                }
-              }
-            }
-          },
-          "timestamp": {"type": "string", "format": "date-time", "example": "2025-06-24T10:30:00+00:00"}
-        }
+             "InstitutionStatisticsResponse": {
+         "type": "object",
+         "properties": {
+           "success": {"type": "boolean", "example": true},
+           "message": {"type": "string", "example": "수요기관별 통계 조회 성공"},
+           "data": {
+             "type": "object",
+             "properties": {
+               "page": {"type": "integer", "description": "페이지 번호", "example": 1},
+               "size": {"type": "integer", "description": "페이지 크기", "example": 10},
+               "total": {"type": "integer", "description": "전체 데이터 수", "example": 147},
+               "year": {"type": "integer", "description": "기준 연도", "example": 2025},
+               "totalInstitutions": {"type": "integer", "description": "전체 수요기관 수", "example": 147},
+               "totalAmount": {"type": "number", "description": "전체 증감금액 합산", "example": 6237229274},
+               "prevYearAmount": {"type": "number", "description": "전년 실적", "example": 0},
+               "growthRate": {"type": "number", "description": "전년 대비 증감률(%)", "example": 0},
+               "institutions": {
+                 "type": "array",
+                 "items": {
+                   "type": "object",
+                   "properties": {
+                     "dminsttNm": {"type": "string", "description": "수요기관명", "example": "서울특별시"},
+                     "dminsttRgnNm": {"type": "string", "description": "수요기관지역", "example": "서울"},
+                     "dminsttCd": {"type": "string", "description": "수요기관코드", "example": "ORG001"},
+                     "currentAmount": {"type": "number", "description": "당해년도 증감금액", "example": 5000000000},
+                     "prevAmount": {"type": "number", "description": "전년도 증감금액", "example": 4500000000},
+                     "growthRate": {"type": "number", "description": "증감률(%)", "example": 11.11},
+                     "deliveryCount": {"type": "integer", "description": "납품 건수", "example": 150},
+                     "exclcProdctAmount": {"type": "number", "description": "우수제품 금액", "example": 3000000000},
+                     "generalProdctAmount": {"type": "number", "description": "일반제품 금액", "example": 2000000000},
+                     "exclcProdctYn": {"type": "string", "description": "주요 제품 유형", "example": "Y"}
+                   }
+                 }
+               },
+               "appliedFilters": {
+                 "type": "object",
+                 "description": "현재 적용된 필터 정보 (값이 있을 때만 표시)",
+                 "properties": {
+                   "year": {"type": "integer", "example": 2025},
+                   "dminsttNm": {"type": "string", "example": "서울특별시"},
+                   "dminsttRgnNm": {"type": "string", "example": "서울"},
+                   "exclcProdctYn": {"type": "string", "example": "Y"},
+                   "corpNm": {"type": "string", "example": "삼성전자"},
+                   "prdctClsfcNoNm": {"type": "string", "example": "컴퓨터"}
+                 }
+               }
+             }
+           },
+           "timestamp": {"type": "string", "format": "date-time", "example": "2025-06-24T10:30:00+00:00"}
+         }
       },
       "UserProfile": {
         "type": "object",
@@ -1875,7 +1875,7 @@
             }
           }
         }
-      }
+       }
     }
   },
   "tags": [

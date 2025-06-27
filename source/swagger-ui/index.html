@@ -174,7 +174,7 @@
         
         function initSwaggerUI() {
             swaggerUI = SwaggerUIBundle({
-                url: './api/docs/openapi.json?v=' + Date.now(),
+                url: window.location.origin + '/api/docs/openapi.json?v=' + Date.now(),
                 dom_id: '#swagger-ui',
                 deepLinking: true,
                 presets: [
