@@ -148,7 +148,7 @@ class Procurement extends CI_Controller {
      *     ),
      *     @OA\Parameter(
      *         name="endDate",
-     *         in="query",
+     *         in="query", 
      *         description="납품요구접수일자 종료일 (YYYY-MM-DD)",
      *         required=false,
      *         @OA\Schema(type="string", format="date", example="2024-01-31")
@@ -348,7 +348,7 @@ class Procurement extends CI_Controller {
         }
         
         // 모델 호출 부분을 v2로 변경
-        $data = $this->Procurement_model->get_delivery_requests_v2($params);
+        $data = $this->Procurement_model->get_delivery_requests($params);
 
         if ($data) {
             // API 호출 로그 기록 (성공)
@@ -455,13 +455,6 @@ class Procurement extends CI_Controller {
      *         @OA\Schema(type="string", example="서울특별시")
      *     ),
      *     @OA\Parameter(
-     *         name="dminsttRgnNm",
-     *         in="query",
-     *         description="수요기관지역 - PowerPoint 요구사항",
-     *         required=false,
-     *         @OA\Schema(type="string", example="서울")
-     *     ),
-     *     @OA\Parameter(
      *         name="exclcProdctYn",
      *         in="query",
      *         description="우수제품여부 (Y/N) - PowerPoint 요구사항",
@@ -483,11 +476,18 @@ class Procurement extends CI_Controller {
      *         @OA\Schema(type="string", example="삼성전자")
      *     ),
      *     @OA\Parameter(
-     *         name="prdctClsfcNoNm",
+     *         name="page",
      *         in="query",
-     *         description="품명 (추가 필터)",
-     *         required=false,
-     *         @OA\Schema(type="string", example="컴퓨터")
+     *         description="페이지 번호 (1부터 시작)",
+     *         required=true,
+     *         @OA\Schema(type="integer", example=1)
+     *     ),
+     *     @OA\Parameter(
+     *         name="size",
+     *         in="query",
+     *         description="페이지 크기 (최대 100)",
+     *         required=true,
+     *         @OA\Schema(type="integer", example=10)
      *     ),
      *     @OA\Response(
      *         response=200,
@@ -496,28 +496,44 @@ class Procurement extends CI_Controller {
      *             @OA\Property(property="success", type="boolean", example=true),
      *             @OA\Property(property="message", type="string", example="수요기관별 통계 조회 성공"),
      *             @OA\Property(property="data", type="object",
+     *                 @OA\Property(property="page", type="integer", description="현재 페이지", example=1),
+     *                 @OA\Property(property="size", type="integer", description="페이지 크기", example=10),
+     *                 @OA\Property(property="total", type="integer", description="전체 데이터 수", example=150),
      *                 @OA\Property(property="year", type="integer", description="기준 연도", example=2025),
-     *                 @OA\Property(property="totalInstitutions", type="integer", description="전체 수요기관 수", example=150),
      *                 @OA\Property(property="totalAmount", type="number", description="전체 증감금액 합산", example=50000000000),
      *                 @OA\Property(property="prevYearAmount", type="number", description="전년 실적", example=45000000000),
      *                 @OA\Property(property="growthRate", type="number", description="전년 대비 증감률(%)", example=11.11),
      *                 @OA\Property(property="institutions", type="array",
-     *                     @OA\Items(
+     *                     @OA\Items(type="object",
      *                         @OA\Property(property="dminsttNm", type="string", description="수요기관명", example="서울특별시"),
-     *                         @OA\Property(property="dminsttRgnNm", type="string", description="수요기관지역", example="서울"),
-     *                         @OA\Property(property="dminsttCd", type="string", description="수요기관코드", example="ORG001"),
-     *                         @OA\Property(property="currentAmount", type="number", description="당해년도 증감금액", example=5000000000),
-     *                         @OA\Property(property="prevAmount", type="number", description="전년도 증감금액", example=4500000000),
+     *                         @OA\Property(property="dminsttCd", type="string", description="수요기관코드", example="6110000"),
+     *                         @OA\Property(property="currentAmount", type="number", description="당해연도 금액", example=5000000000),
+     *                         @OA\Property(property="prevAmount", type="number", description="전년도 금액", example=4500000000),
      *                         @OA\Property(property="growthRate", type="number", description="증감률(%)", example=11.11),
-     *                         @OA\Property(property="deliveryCount", type="integer", description="납품 건수", example=150),
+     *                         @OA\Property(property="deliveryCount", type="integer", description="납품요구 건수", example=50),
      *                         @OA\Property(property="exclcProdctAmount", type="number", description="우수제품 금액", example=3000000000),
      *                         @OA\Property(property="generalProdctAmount", type="number", description="일반제품 금액", example=2000000000),
-     *                         @OA\Property(property="exclcProdctYn", type="string", description="주요 제품 유형", example="Y")
+     *                         @OA\Property(property="exclcProdctYn", type="string", description="주요 우수제품 여부", example="Y")
      *                     )
+     *                 ),
+     *                 @OA\Property(property="appliedFilters", type="object",
+     *                     @OA\Property(property="year", type="integer", description="적용된 연도 필터", example=2025),
+     *                     @OA\Property(property="dminsttNm", type="string", description="적용된 수요기관명 필터", example="서울특별시"),
+     *                     @OA\Property(property="exclcProdctYn", type="string", description="적용된 우수제품여부 필터", example="Y"),
+     *                     @OA\Property(property="corpNm", type="string", description="적용된 업체명 필터", example="삼성전자")
      *                 )
-     *             ),
-     *             @OA\Property(property="timestamp", type="string", example="2025-06-24T10:30:00+00:00")
+     *             )
      *         )
+     *     ),
+     *     @OA\Response(
+     *         response=400,
+     *         description="잘못된 요청",
+     *         @OA\JsonContent(ref="#/components/schemas/Error")
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="인증 실패",
+     *         @OA\JsonContent(ref="#/components/schemas/Error")
      *     )
      * )
      */
@@ -538,50 +554,41 @@ class Procurement extends CI_Controller {
             $page = $this->input->get('page');
             $size = $this->input->get('size');
             
-            $params['page'] = $page ? max(1, (int)$page) : 1;
-            $params['size'] = $size ? max(1, min(100, (int)$size)) : 10; // 최대 100개로 제한
+            if (!$page || !$size) {
+                return $this->output_error('page와 size는 필수 파라미터입니다.', 400);
+            }
             
-            // 연도 필터는 선택사항으로 변경 (기본값 제거)
+            $params['page'] = max(1, (int)$page);
+            $params['size'] = max(1, min(100, (int)$size)); // 최대 100개로 제한
+            
+            // 연도 필터는 선택사항으로 변경 (기본값: 현재 연도)
             $year = $this->input->get('year');
             if ($year && $year !== '' && $year !== 'null') {
                 $params['year'] = (int)$year;
             } else {
-                // 기본값: 현재 연도 (초기 검색용)
                 $params['year'] = (int)date('Y');
             }
             
-            // 선택적 필터 파라미터들 (모두 선택사항)
-            $optional_filter_mappings = [
-                'dminsttNm' => 'dminsttNm',           // 수요기관명 기준 필터
-                'dminsttRgnNm' => 'dminsttRgnNm',     // 수요기관지역
-                'exclcProdctYn' => 'exclcProdctYn',   // 우수제품여부 필터
-                'includePrevYear' => 'includePrevYear', // 전년 대비 증감률 계산 포함
-                
-                // 추가 필터들 (선택사항)
-                'corpNm' => 'corpNm',
-                'prdctClsfcNoNm' => 'prdctClsfcNoNm',
-                
-                // 기존 호환성 (선택사항)
-                'dlvrReqRcptDate' => 'dlvrReqRcptDate',
-                'dateFrom' => 'dateFrom',
-                'dateTo' => 'dateTo',
-                'amountFrom' => 'amountFrom',
-                'amountTo' => 'amountTo'
+            // 선택적 필터 파라미터들
+            $optional_filters = [
+                'dminsttNm' => '수요기관명',
+                'exclcProdctYn' => '우수제품여부',
+                'corpNm' => '업체명',
+                'includePrevYear' => '전년대비 포함여부'
             ];
             
-            // 필터 파라미터는 값이 존재할 때만 적용 (초기 검색시에는 적용 안됨)
-            foreach ($optional_filter_mappings as $query_key => $param_key) {
-                $value = $this->input->get($query_key);
+            foreach ($optional_filters as $key => $description) {
+                $value = $this->input->get($key);
                 if ($value !== null && $value !== '' && $value !== 'null') {
-                    if ($query_key === 'includePrevYear') {
-                        $params[$param_key] = filter_var($value, FILTER_VALIDATE_BOOLEAN);
+                    if ($key === 'includePrevYear') {
+                        $params[$key] = filter_var($value, FILTER_VALIDATE_BOOLEAN);
                     } else {
-                        $params[$param_key] = $value;
+                        $params[$key] = $value;
                     }
                 }
             }
             
-            // 전년 대비 계산은 기본적으로 포함 (초기 검색용)
+            // 전년 대비 계산은 기본적으로 포함
             if (!isset($params['includePrevYear'])) {
                 $params['includePrevYear'] = true;
             }
@@ -595,25 +602,20 @@ class Procurement extends CI_Controller {
                 'size' => $params['size'],
                 'total' => $result['total'] ?? 0,
                 'year' => $params['year'],
-                'totalInstitutions' => $result['total'] ?? 0,
                 'totalAmount' => $result['totalAmount'] ?? 0,
                 'prevYearAmount' => $result['prevYearAmount'] ?? 0,
                 'growthRate' => $result['growthRate'] ?? 0,
                 'institutions' => $result['institutions'] ?? [],
-                
-                // 현재 적용된 필터 정보 (값이 있을 때만 표시)
                 'appliedFilters' => array_filter([
                     'year' => $params['year'] ?? null,
                     'dminsttNm' => $params['dminsttNm'] ?? null,
-                    'dminsttRgnNm' => $params['dminsttRgnNm'] ?? null,
                     'exclcProdctYn' => $params['exclcProdctYn'] ?? null,
-                    'corpNm' => $params['corpNm'] ?? null,
-                    'prdctClsfcNoNm' => $params['prdctClsfcNoNm'] ?? null
+                    'corpNm' => $params['corpNm'] ?? null
                 ], function($value) {
                     return $value !== null && $value !== '';
                 })
             ];
-
+            
             // API 호출 기록
             $this->log_api_call('/api/procurement/statistics/institutions', 'GET', $decoded_token->user_id);
             

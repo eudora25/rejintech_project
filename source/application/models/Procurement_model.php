@@ -19,7 +19,7 @@ class Procurement_model extends CI_Model {
         $page = isset($params['page']) ? (int)$params['page'] : 1;
         $size = isset($params['size']) ? (int)$params['size'] : 50;
         $offset = ($page - 1) * $size;
-
+        
         // --- SELECT 절: delivery_requests 테이블을 중심으로 필드 선택 ---
         $this->db->select("
             dr.delivery_request_number AS dlvrReqNo,
@@ -28,7 +28,6 @@ class Procurement_model extends CI_Model {
             DATE_FORMAT(dr.delivery_deadline_date, '%Y-%m-%d') AS dlvrTmlmtDate,
             dr.delivery_request_name AS dlvrReqNm,
             i.institution_name AS dminsttNm,
-            i.region_name AS dminsttRgnNm,
             c.company_name AS corpNm,
             ct.contract_number AS cntrctNo,
             dr.total_amount,
@@ -36,7 +35,7 @@ class Procurement_model extends CI_Model {
             CASE WHEN dr.is_excellent_product = 1 THEN 'Y' ELSE 'N' END AS exclcProdctYn,
             CASE WHEN dr.is_excellent_product = 1 THEN 'CSO' ELSE 'MAS' END AS type
         ");
-
+        
         // --- FROM 및 JOIN 절: 정규화된 테이블 사용 ---
         $this->db->from('delivery_requests dr');
         $this->db->join('institutions i', 'dr.institution_id = i.id', 'left');
@@ -45,7 +44,7 @@ class Procurement_model extends CI_Model {
         
         // 필터 조건 적용
         $this->_apply_filters($this->db, $params);
-
+        
         // 전체 카운트 구하기 (페이징용)
         $total_query = clone $this->db;
         $total = $total_query->count_all_results('', FALSE);
@@ -57,7 +56,7 @@ class Procurement_model extends CI_Model {
         $this->db->limit($size, $offset);
         
         $data = $this->db->get()->result_array();
-
+        
         // 금액 집계 정보
         $totals = $this->get_amount_totals($params);
         
@@ -91,11 +90,6 @@ class Procurement_model extends CI_Model {
             } elseif ($params['exclcProdctYn'] === '마스') {
                 $db->where('dr.is_excellent_product', 0);
             }
-        }
-        
-        // 수요기관지역 필터 (institutions 테이블 기준)
-        if (!empty($params['dminsttRgnNm'])) {
-            $db->like('i.region_name', $params['dminsttRgnNm']);
         }
 
         // 수요기관 필터 (institutions 테이블 기준)
@@ -177,7 +171,7 @@ class Procurement_model extends CI_Model {
             'totalAmount' => (float)($result['totalAmount'] ?? 0)
         ];
     }
-
+    
     /**
      * 수요기관별 통계 조회 (PowerPoint 3번째 슬라이드 요구사항 반영)
      * 
@@ -233,36 +227,47 @@ class Procurement_model extends CI_Model {
     }
     
     /**
-     * 특정 연도의 수요기관별 통계 조회 (실제 테이블 구조 반영)
+     * 특정 연도의 수요기관별 통계 조회 (정규화된 테이블 구조 반영)
      */
     private function _get_yearly_institution_stats($year, $params = [], $page = null, $size = null) {
-        // PowerPoint 요구사항에 맞는 SELECT 구문 (실제 테이블 구조)
+        // 정규화된 테이블 구조에 맞는 SELECT 구문
         $this->db->select("
-            drd.dminstt_nm as dminsttNm,
-            drd.dminstt_rgn_nm as dminsttRgnNm,
-            drd.dminstt_cd as dminsttCd,
-            COUNT(DISTINCT drd.dlvr_req_no) as delivery_count,
-            SUM(drd.incdec_amt) as current_amount,
-            SUM(CASE WHEN drd.exclc_prodct_yn = 'Y' THEN drd.incdec_amt ELSE 0 END) as exclc_prodct_amount,
-            SUM(CASE WHEN drd.exclc_prodct_yn = 'N' THEN drd.incdec_amt ELSE 0 END) as general_prodct_amount,
+            i.institution_name as dminsttNm,
+            i.institution_code as dminsttCd,
+            COUNT(DISTINCT dr.delivery_request_number) as delivery_count,
+            SUM(dr.total_amount) as current_amount,
+            SUM(CASE WHEN dr.is_excellent_product = 1 THEN dr.total_amount ELSE 0 END) as exclc_prodct_amount,
+            SUM(CASE WHEN dr.is_excellent_product = 0 THEN dr.total_amount ELSE 0 END) as general_prodct_amount,
             CASE 
-                WHEN SUM(CASE WHEN drd.exclc_prodct_yn = 'Y' THEN drd.incdec_amt ELSE 0 END) > 
-                     SUM(CASE WHEN drd.exclc_prodct_yn = 'N' THEN drd.incdec_amt ELSE 0 END) 
+                WHEN SUM(CASE WHEN dr.is_excellent_product = 1 THEN dr.total_amount ELSE 0 END) > 
+                     SUM(CASE WHEN dr.is_excellent_product = 0 THEN dr.total_amount ELSE 0 END) 
                 THEN 'Y' ELSE 'N' 
             END as main_exclc_prodct_yn
         ");
         
-        $this->db->from('delivery_request_details drd');
+        $this->db->from('delivery_requests dr');
+        $this->db->join('institutions i', 'dr.institution_id = i.id', 'left');
+        $this->db->join('companies c', 'dr.company_id = c.id', 'left');
+        $this->db->join('contracts ct', 'dr.contract_id = ct.id', 'left');
         
-        // PowerPoint 요구사항: 연도별 필터링 (임시로 조건 제거 - 날짜 데이터 문제)
-        // $this->db->where('YEAR(drd.dlvr_req_rcpt_date)', $year);
+        // 연도별 필터링
+        $this->db->where('YEAR(dr.delivery_receipt_date)', $year);
         
-        // 기타 필터 적용 (연도 필터 제외)
-        $exclude_filters = ['year', 'includePrevYear', 'dateFrom', 'dateTo', 'page', 'size'];
-        $this->_apply_filters($params, $exclude_filters);
+        // 기타 필터 적용
+        if (!empty($params['dminsttNm'])) {
+            $this->db->like('i.institution_name', $params['dminsttNm']);
+        }
+        
+        if (!empty($params['exclcProdctYn'])) {
+            $this->db->where('dr.is_excellent_product', $params['exclcProdctYn'] === 'Y' ? 1 : 0);
+        }
+        
+        if (!empty($params['corpNm'])) {
+            $this->db->like('c.company_name', $params['corpNm']);
+        }
         
         // 수요기관별 그룹핑
-        $this->db->group_by(['drd.dminstt_cd', 'drd.dminstt_nm', 'drd.dminstt_rgn_nm']);
+        $this->db->group_by(['i.id', 'i.institution_name', 'i.institution_code']);
         $this->db->order_by('current_amount', 'DESC');
         
         // 페이징 적용 (페이지 정보가 있을 때만)
@@ -275,18 +280,29 @@ class Procurement_model extends CI_Model {
     }
     
     /**
-     * 수요기관별 통계 전체 개수 조회
+     * 수요기관별 통계 전체 개수 조회 (정규화된 테이블 구조 반영)
      */
     private function _get_institution_stats_count($year, $params = []) {
-        $this->db->select("COUNT(DISTINCT CONCAT(drd.dminstt_cd, '-', drd.dminstt_nm)) as total_count");
-        $this->db->from('delivery_request_details drd');
+        $this->db->select("COUNT(DISTINCT i.id) as total_count");
+        $this->db->from('delivery_requests dr');
+        $this->db->join('institutions i', 'dr.institution_id = i.id', 'left');
+        $this->db->join('companies c', 'dr.company_id = c.id', 'left');
         
-        // PowerPoint 요구사항: 연도별 필터링 (임시로 조건 제거 - 날짜 데이터 문제)
-        // $this->db->where('YEAR(drd.dlvr_req_rcpt_date)', $year);
+        // 연도별 필터링
+        $this->db->where('YEAR(dr.delivery_receipt_date)', $year);
         
-        // 기타 필터 적용 (연도 필터 제외)
-        $exclude_filters = ['year', 'includePrevYear', 'dateFrom', 'dateTo', 'page', 'size'];
-        $this->_apply_filters($params, $exclude_filters);
+        // 필터 적용
+        if (!empty($params['dminsttNm'])) {
+            $this->db->like('i.institution_name', $params['dminsttNm']);
+        }
+        
+        if (!empty($params['exclcProdctYn'])) {
+            $this->db->where('dr.is_excellent_product', $params['exclcProdctYn'] === 'Y' ? 1 : 0);
+        }
+        
+        if (!empty($params['corpNm'])) {
+            $this->db->like('c.company_name', $params['corpNm']);
+        }
         
         $result = $this->db->get()->row_array();
         return $result ? (int)$result['total_count'] : 0;
@@ -299,18 +315,18 @@ class Procurement_model extends CI_Model {
         // 전년도 데이터를 기관별로 인덱싱
         $prev_stats_indexed = [];
         foreach ($prev_stats as $stat) {
-            $prev_stats_indexed[$stat['dminsttNm']] = $stat;
+            $prev_stats_indexed[$stat['dminsttCd']] = $stat;
         }
         
         $result = [];
         foreach ($current_stats as $current) {
-            $institution_name = $current['dminsttNm'];
+            $institution_code = $current['dminsttCd'];
             $current_amount = (float)$current['current_amount'];
             
             // 전년도 데이터 찾기
             $prev_amount = 0;
-            if (isset($prev_stats_indexed[$institution_name])) {
-                $prev_amount = (float)$prev_stats_indexed[$institution_name]['current_amount'];
+            if (isset($prev_stats_indexed[$institution_code])) {
+                $prev_amount = (float)$prev_stats_indexed[$institution_code]['current_amount'];
             }
             
             // 증감률 계산
@@ -324,7 +340,6 @@ class Procurement_model extends CI_Model {
             // PowerPoint 요구사항에 맞는 응답 구조
             $result[] = [
                 'dminsttNm' => $current['dminsttNm'],
-                'dminsttRgnNm' => $current['dminsttRgnNm'],
                 'dminsttCd' => $current['dminsttCd'],
                 'currentAmount' => $current_amount,
                 'prevAmount' => $prev_amount,
