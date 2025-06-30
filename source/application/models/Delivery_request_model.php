@@ -200,4 +200,95 @@ class Delivery_request_model extends CI_Model
 
         return $stats;
     }
+
+    /**
+     * filtering_companies 테이블에서 활성화된 사업자번호 목록 조회
+     * 
+     * @return array 허용된 사업자번호 배열
+     */
+    public function get_allowed_business_numbers()
+    {
+        $result = $this->db->select('business_number')
+                          ->from('filtering_companies')
+                          ->where('is_active', 1)
+                          ->get()
+                          ->result_array();
+        
+        return array_column($result, 'business_number');
+    }
+
+    /**
+     * 사업자번호가 filtering_companies에 등록되어 있는지 확인
+     * 
+     * @param string $business_number 사업자번호
+     * @return bool 허용 여부
+     */
+    public function is_allowed_business_number($business_number)
+    {
+        if (empty($business_number)) {
+            return false;
+        }
+
+        $count = $this->db->where('business_number', $business_number)
+                         ->where('is_active', 1)
+                         ->count_all_results('filtering_companies');
+        
+        return $count > 0;
+    }
+
+    /**
+     * 납품요구 상세정보 저장 또는 업데이트 (필터링 적용)
+     * 
+     * @param array $data 납품요구 상세정보 데이터
+     * @param bool $apply_filtering 필터링 적용 여부 (기본값: true)
+     * @return int|false 저장된/업데이트된 레코드 ID 또는 false (필터링으로 제외됨)
+     */
+    public function save_delivery_request_with_filtering($data, $apply_filtering = true)
+    {
+        // 필터링 적용 시 사업자번호 검증
+        if ($apply_filtering) {
+            $business_number = isset($data['cntrct_corp_bizno']) ? $data['cntrct_corp_bizno'] : null;
+            
+            if (!$this->is_allowed_business_number($business_number)) {
+                // 로깅용으로 필터링된 정보 기록
+                log_message('info', "Filtered out by business_number: {$business_number} - " . 
+                          (isset($data['corp_nm']) ? $data['corp_nm'] : 'Unknown Company'));
+                return false;
+            }
+        }
+
+        // 기존 저장 로직 실행
+        return $this->save_delivery_request($data);
+    }
+
+    /**
+     * 필터링 통계 조회
+     * 
+     * @return array 필터링 관련 통계
+     */
+    public function get_filtering_statistics()
+    {
+        $stats = array();
+
+        // filtering_companies 테이블 통계
+        $stats['total_filtering_companies'] = $this->db->count_all('filtering_companies');
+        $stats['active_filtering_companies'] = $this->db->where('is_active', 1)
+                                                       ->count_all_results('filtering_companies');
+
+        // delivery_request_details에서 매칭 통계
+        $this->db->select('
+            COUNT(*) as total_records,
+            COUNT(CASE WHEN fc.business_number IS NOT NULL THEN 1 END) as matched_records,
+            COUNT(CASE WHEN fc.business_number IS NULL AND drd.cntrct_corp_bizno IS NOT NULL THEN 1 END) as unmatched_records,
+            COUNT(CASE WHEN drd.cntrct_corp_bizno IS NULL THEN 1 END) as no_business_number_records
+        ');
+        $this->db->from($this->table . ' drd');
+        $this->db->join('filtering_companies fc', 'drd.cntrct_corp_bizno = fc.business_number AND fc.is_active = 1', 'left');
+        
+        $result = $this->db->get()->row_array();
+        
+        $stats['delivery_matching'] = $result;
+
+        return $stats;
+    }
 } 

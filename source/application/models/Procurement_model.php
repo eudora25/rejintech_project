@@ -14,61 +14,73 @@ class Procurement_model extends CI_Model {
      * @param array $params 필터 및 페이징 파라미터
      * @return array
      */
-    public function get_delivery_requests($params = []) {
-        // 기본 파라미터 설정
-        $page = isset($params['page']) ? (int)$params['page'] : 1;
-        $size = isset($params['size']) ? (int)$params['size'] : 50;
-        $offset = ($page - 1) * $size;
+    public function get_delivery_requests($params)
+    {
+        // 기본값 설정
+        $page = max(1, (int)$params['page']);
+        $limit = max(1, min(100, (int)$params['limit']));
+        $offset = ($page - 1) * $limit;
         
-        // --- SELECT 절: delivery_requests 테이블을 중심으로 필드 선택 ---
-        $this->db->select("
-            dr.delivery_request_number AS dlvrReqNo,
-            DATE_FORMAT(dr.delivery_request_date, '%Y-%m-%d') AS dlvrReqDate,
-            DATE_FORMAT(dr.delivery_receipt_date, '%Y-%m-%d') AS dlvrReqRcptDate,
-            DATE_FORMAT(dr.delivery_deadline_date, '%Y-%m-%d') AS dlvrTmlmtDate,
-            dr.delivery_request_name AS dlvrReqNm,
-            i.institution_name AS dminsttNm,
-            c.company_name AS corpNm,
-            ct.contract_number AS cntrctNo,
-            dr.total_amount,
-            dr.total_quantity,
-            CASE WHEN dr.is_excellent_product = 1 THEN 'Y' ELSE 'N' END AS exclcProdctYn,
-            CASE WHEN dr.is_excellent_product = 1 THEN 'CSO' ELSE 'MAS' END AS type
-        ");
-        
-        // --- FROM 및 JOIN 절: 정규화된 테이블 사용 ---
+        // 기본 쿼리 구성
+        $this->db->select('dr.*, i.institution_name, c.company_name');
         $this->db->from('delivery_requests dr');
         $this->db->join('institutions i', 'dr.institution_id = i.id', 'left');
         $this->db->join('companies c', 'dr.company_id = c.id', 'left');
-        $this->db->join('contracts ct', 'dr.contract_id = ct.id', 'left');
         
-        // 필터 조건 적용
-        $this->_apply_filters($this->db, $params);
+        // 검색 조건 적용
+        if (!empty($params['start_date'])) {
+            $this->db->where('dr.delivery_request_date >=', $params['start_date']);
+        }
+        if (!empty($params['end_date'])) {
+            $this->db->where('dr.delivery_request_date <=', $params['end_date']);
+        }
+        if (!empty($params['institution_id'])) {
+            $this->db->where('dr.institution_id', $params['institution_id']);
+        }
+        if (!empty($params['company_id'])) {
+            $this->db->where('dr.company_id', $params['company_id']);
+        }
+        if (!empty($params['product_id'])) {
+            $this->db->join('delivery_request_items dri', 'dr.id = dri.delivery_request_id', 'inner');
+            $this->db->where('dri.product_id', $params['product_id']);
+            $this->db->group_by('dr.id');
+        }
         
-        // 전체 카운트 구하기 (페이징용)
-        $total_query = clone $this->db;
-        $total = $total_query->count_all_results('', FALSE);
-        
-        // 정렬 처리
-        $this->_apply_sorting($params);
+        // 전체 레코드 수 조회
+        $total = $this->db->count_all_results('', false);
         
         // 페이징 적용
-        $this->db->limit($size, $offset);
+        $this->db->limit($limit, $offset);
         
-        $data = $this->db->get()->result_array();
+        // 정렬
+        $this->db->order_by('dr.delivery_request_date', 'DESC');
+        $this->db->order_by('dr.id', 'DESC');
         
-        // 금액 집계 정보
-        $totals = $this->get_amount_totals($params);
+        // 쿼리 실행
+        $items = $this->db->get()->result_array();
         
-        return [
-            'page' => $page,
-            'size' => $size,
+        // 날짜 형식 정리
+        foreach ($items as &$item) {
+            // 날짜가 0000-00-00인 경우 null로 변환
+            if ($item['delivery_request_date'] === '0000-00-00') {
+                $item['delivery_request_date'] = null;
+            }
+            if ($item['delivery_receipt_date'] === '0000-00-00') {
+                $item['delivery_receipt_date'] = null;
+            }
+            if ($item['delivery_deadline_date'] === '0000-00-00') {
+                $item['delivery_deadline_date'] = null;
+            }
+            
+            // 기타 날짜 필드도 빈 문자열이면 null로 변환
+            $item['international_delivery_date'] = $item['international_delivery_date'] ?: null;
+            $item['data_sync_date'] = $item['data_sync_date'] ?: null;
+        }
+        
+        return array(
             'total' => $total,
-            'jodalTotalAmount' => $totals['jodalTotalAmount'],
-            'masTotalAmount' => $totals['masTotalAmount'],
-            'totalAmount' => $totals['totalAmount'],
-            'data' => $data
-        ];
+            'items' => $items
+        );
     }
     
     /**
@@ -397,5 +409,18 @@ class Procurement_model extends CI_Model {
         $this->db->order_by('total_amount', 'DESC');
         
         return $this->db->get()->result_array();
+    }
+
+    /**
+     * 제품 목록을 조회합니다.
+     */
+    public function get_products()
+    {
+        $this->db->select('*');
+        $this->db->from('products');
+        $this->db->order_by('id', 'ASC');
+        
+        $query = $this->db->get();
+        return $query->result_array();
     }
 } 
