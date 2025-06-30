@@ -419,7 +419,7 @@ GET /api/procurement/statistics/products
 
 ### 납품요구 목록 조회
 
-납품요구 목록을 조회합니다.
+납품요구 목록을 조회합니다. 기간별, 지역별, 기관별, 업체별 등 다양한 조건으로 필터링이 가능합니다.
 
 ```http
 GET /api/procurement/delivery-requests
@@ -431,56 +431,78 @@ GET /api/procurement/delivery-requests
 **필수 파라미터**
 | 파라미터 | 타입 | 설명 | 기본값 | 제약사항 |
 |----------|------|------|---------|-----------|
-| startDate | string | 납품요구접수일자 시작일 (YYYY-MM-DD) | - | 유효한 날짜 형식 |
-| endDate | string | 납품요구접수일자 종료일 (YYYY-MM-DD) | - | 유효한 날짜 형식 |
-| exclcProdctYn | string | 구분(조달/마스/전체) | - | 'Y'(조달), 'N'(마스) |
+| start_date | string | 납품요구접수일자 시작일 (YYYY-MM-DD) | - | 유효한 날짜 형식 |
+| end_date | string | 납품요구접수일자 종료일 (YYYY-MM-DD) | - | 유효한 날짜 형식 |
+
+**선택 파라미터**
+| 파라미터 | 타입 | 설명 | 기본값 | 제약사항 |
+|----------|------|------|---------|-----------|
+| exclcProdctYn | string | 우수제품여부 | - | 'Y' 또는 'N' |
 | prdctClsfcNoNm | string | 품명 | - | 최대 100자 |
 | dtilPrdctClsfcNoNm | string | 세부품명 | - | 최대 100자 |
 | dminsttRgnNm | string | 수요기관지역 | - | 유효한 행정구역명 |
-| dminsttNm | string | 수요기관 | - | 최대 100자 |
-| corpNm | string | 계약업체 | - | 최대 100자 |
+| dminsttNm | string | 수요기관명 | - | 최대 100자 |
+| corpNm | string | 업체명 | - | 최대 100자 |
 | page | integer | 페이지 번호 | 1 | 1 이상 |
-| pageSize | integer | 페이지당 데이터 수 | 20 | 1~100 |
-| sortBy | string | 정렬 기준 필드 | dlvrReqRcptDate | 유효한 필드명 |
-| sortOrder | string | 정렬 순서 | desc | 'asc' 또는 'desc' |
+| size | integer | 페이지당 데이터 수 | 20 | 1~100 |
+| sort | string | 정렬 기준 필드 | dlvrReqRcptDate | 유효한 필드명 |
+| order | string | 정렬 순서 | desc | 'asc' 또는 'desc' |
 
 **응답 필드 설명**
 | 필드 | 타입 | 설명 |
 |------|------|------|
-| totalAmount | number | 모든 납품요구의 total_amount 합계 |
-| jodalTotalAmount | number | 우수제품(is_excellent_product=1) 납품요구의 total_amount 합계 |
-| masTotalAmount | number | 일반제품(is_excellent_product=0) 납품요구의 total_amount 합계 |
+| page | integer | 현재 페이지 번호 |
+| size | integer | 페이지당 데이터 수 |
+| total | integer | 전체 데이터 수 |
+| totalAmount | number | 전체 금액 합계 |
+| jodalTotalAmount | number | 우수제품 금액 합계 |
+| masTotalAmount | number | 일반제품 금액 합계 |
 | items | array | 납품요구 목록 |
-| totalCount | integer | 전체 데이터 수 |
-| currentPage | integer | 현재 페이지 번호 |
-| totalPages | integer | 전체 페이지 수 |
+| items[].exclcProdctYn | string | 우수제품여부 (Y/N) |
+| items[].dlvrReqRcptDate | string | 납품요구접수일자 |
+| items[].dminsttNm | string | 수요기관명 |
+| items[].dminsttRgnNm | string | 수요기관지역 |
+| items[].corpNm | string | 업체명 |
+| items[].dlvrReqNm | string | 납품요구명 |
+| items[].prdctClsfcNoNm | string | 품명 |
+| items[].dtilPrdctClsfcNoNm | string | 세부품명 |
+| items[].prdctIdntNo | string | 식별번호 |
+| items[].prdctIdntNoNm | string | 식별번호명 |
+| items[].incdecQty | number | 수량 |
+| items[].prdctUprc | number | 단가 |
+| items[].incdecAmt | number | 금액 |
+| items[].dminsttCd | string | 수요기관코드 |
 
 **성공 응답 (200 OK)**
 ```json
 {
   "success": true,
+  "message": "납품요구 목록 조회 성공",
   "data": {
+    "page": 1,
+    "size": 20,
+    "total": 215,
     "totalAmount": 1000000000,
     "jodalTotalAmount": 600000000,
     "masTotalAmount": 400000000,
     "items": [
       {
-        "id": 1,
-        "dlvrReqNo": "DLV123456",
+        "exclcProdctYn": "Y",
         "dlvrReqRcptDate": "2024-01-01",
+        "dminsttNm": "수원시청",
+        "dminsttRgnNm": "경기도",
+        "corpNm": "(주)지인테크",
+        "dlvrReqNm": "CCTV 설치",
         "prdctClsfcNoNm": "영상감시장치",
         "dtilPrdctClsfcNoNm": "CCTV",
-        "dminsttRgnNm": "경기도",
-        "dminsttNm": "수원시청",
-        "corpNm": "(주)지인테크",
-        "totalAmount": 50000000,
-        "isExcellentProduct": 1
+        "prdctIdntNo": "23571113",
+        "prdctIdntNoNm": "고해상도 CCTV",
+        "incdecQty": 10,
+        "prdctUprc": 5000000,
+        "incdecAmt": 50000000,
+        "dminsttCd": "3910000"
       }
-      // ... 추가 항목
-    ],
-    "totalCount": 215,
-    "currentPage": 1,
-    "totalPages": 11
+    ]
   }
 }
 ```
@@ -492,8 +514,8 @@ GET /api/procurement/delivery-requests
   "success": false,
   "message": "잘못된 요청입니다.",
   "errors": {
-    "startDate": "시작일이 종료일보다 늦을 수 없습니다.",
-    "pageSize": "페이지당 데이터 수는 1에서 100 사이여야 합니다."
+    "start_date": "시작일이 종료일보다 늦을 수 없습니다.",
+    "size": "페이지당 데이터 수는 1에서 100 사이여야 합니다."
   }
 }
 ```
@@ -504,10 +526,15 @@ GET /api/procurement/delivery-requests
   "message": "유효하지 않은 토큰입니다."
 }
 ```
-- 429 Too Many Requests: 요청 제한 초과
-```json
-{
-  "success": false,
-  "message": "요청 횟수가 제한을 초과했습니다. 잠시 후 다시 시도해주세요."
-}
-``` 
+
+**지역 매칭 로직**
+- 수요기관지역(dminsttRgnNm)은 행정구역 단위로 매칭됩니다.
+- 상위 행정구역으로 검색 시 하위 행정구역을 포함합니다.
+  - 예: "경기도" 검색 시 "수원시", "성남시" 등 경기도 내 모든 시군 포함
+- 정확한 지역명을 입력해야 하며, 부분 검색은 지원하지 않습니다.
+
+**기간 필터링**
+- start_date와 end_date는 YYYY-MM-DD 형식으로 입력
+- 시작일은 종료일보다 이후일 수 없음
+- 최대 조회 기간은 1년으로 제한
+- 날짜 범위는 납품요구접수일자(dlvrReqRcptDate) 기준으로 적용 
