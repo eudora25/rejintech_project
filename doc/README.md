@@ -307,10 +307,10 @@ docker-compose logs -f rejintech-mariadb
   - 모니터링
   - 품질 관리
 
-## 기타 문서
-- [부하 테스트 보고서](load_test_report.md)
-- [배치 비교 보고서](batch_comparison_report.md)
-- [데이터베이스 비교 보고서](database_comparison_report.md)
+## 보고서
+- [부하 테스트 보고서](reports/load_test_report.md)
+- [배치 비교 보고서](reports/batch_comparison_report.md)
+- [데이터베이스 비교 보고서](reports/database_comparison_report.md)
 
 ## 문서 작성 가이드
 1. 모든 문서는 마크다운 형식으로 작성
@@ -323,4 +323,5 @@ docker-compose logs -f rejintech-mariadb
 | 날짜 | 버전 | 설명 | 작성자 |
 |------|------|------|--------|
 | 2024-03-29 | 1.0.0 | 문서 구조 개편 | 시스템 |
-| 2024-03-29 | 1.0.1 | API 문서 업데이트 | 시스템 | 
+| 2024-03-29 | 1.0.1 | API 문서 업데이트 | 시스템 |
+| 2024-03-29 | 1.0.2 | 보고서 폴더 구조 변경 | 시스템 | 
