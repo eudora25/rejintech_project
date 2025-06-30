@@ -2,11 +2,20 @@
 
 ## 목차
 1. [배포 환경](#배포-환경)
-2. [배포 프로세스](#배포-프로세스)
-3. [모니터링](#모니터링)
-4. [장애 대응](#장애-대응)
+2. [서버 접근](#서버-접근)
+3. [배포 프로세스](#배포-프로세스)
+4. [모니터링](#모니터링)
+5. [장애 대응](#장애-대응)
 
 ## 배포 환경
+
+### 서버 정보
+- **서버 IP**: 52.78.104.83
+- **환경**: AWS EC2 (t3.medium)
+- **운영체제**: Amazon Linux 2
+- **웹 서버**: Nginx 1.20
+- **PHP**: 8.1
+- **데이터베이스**: MariaDB 10.6
 
 ### 인프라 구성
 - AWS EC2: t3.medium (2vCPU, 4GB RAM)
@@ -63,6 +72,35 @@ services:
   - Web: 80, 443
   - App: 9000
   - DB: 3306
+
+## 서버 접근
+
+### SSH 접속
+```bash
+# SSH 키 권한 설정
+chmod 400 ./keys/jiintech-web-key.pem
+
+# 서버 접속
+ssh -i ./keys/jiintech-web-key.pem ec2-user@52.78.104.83
+```
+
+### 주요 디렉토리
+- 웹 루트: `/var/www/html`
+- Nginx 설정: `/etc/nginx/conf.d`
+- PHP-FPM 설정: `/etc/php-fpm.d`
+- 로그 파일: `/var/log/nginx`, `/var/log/php-fpm`
+- SSL 인증서: `/etc/nginx/ssl`
+
+### 데이터베이스 접속
+- **호스트**: rejintech-mariadb
+- **데이터베이스**: jintech
+- **사용자**: jintech
+- **포트**: 3306
+
+### 권한 관리
+- EC2 접속: SSH 키 기반 인증
+- 데이터베이스: 계정별 권한 설정
+- 파일 시스템: 그룹 기반 권한 관리
 
 ## 배포 프로세스
 
