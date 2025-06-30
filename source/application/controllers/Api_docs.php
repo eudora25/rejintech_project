@@ -32,31 +32,34 @@ class Api_docs extends CI_Controller
     }
     
     /**
-     * OpenAPI JSON 스펙 제공
-     * GET /api/docs/openapi.json
+     * OpenAPI JSON 스펙 반환
      */
     public function openapi_json()
     {
-        header('Content-Type: application/json; charset=utf-8');
+        // JSON 응답 헤더 설정
+        $this->output->set_content_type('application/json', 'utf-8');
         
         try {
-            $openapi_file = FCPATH . 'api/docs/openapi.json';
+            $json_file = APPPATH . '../api/docs/openapi.json';
             
-            if (file_exists($openapi_file)) {
-                // 파일에서 읽기
-                $content = file_get_contents($openapi_file);
-                echo $content;
+            if (file_exists($json_file)) {
+                // 정적 파일에서 로드
+                $json_content = file_get_contents($json_file);
+                $this->output->set_output($json_content);
             } else {
                 // 동적으로 생성
-                echo $this->_generate_openapi_spec();
+                $this->output->set_output($this->_generate_openapi_spec());
             }
             
         } catch (Exception $e) {
-            http_response_code(500);
-            echo json_encode([
+            $error_response = [
                 'error' => 'OpenAPI 스펙을 로드할 수 없습니다',
                 'message' => ENVIRONMENT === 'development' ? $e->getMessage() : 'Internal Server Error'
-            ], JSON_UNESCAPED_UNICODE);
+            ];
+            
+            $this->output
+                ->set_status_header(500)
+                ->set_output(json_encode($error_response, JSON_UNESCAPED_UNICODE));
         }
     }
     
@@ -65,16 +68,19 @@ class Api_docs extends CI_Controller
      */
     public function generate()
     {
-        header('Content-Type: application/json; charset=utf-8');
+        $this->output->set_content_type('application/json', 'utf-8');
         
         try {
-            echo $this->_generate_openapi_spec();
+            $this->output->set_output($this->_generate_openapi_spec());
         } catch (Exception $e) {
-            http_response_code(500);
-            echo json_encode([
+            $error_response = [
                 'error' => 'OpenAPI 스펙 생성 실패',
                 'message' => ENVIRONMENT === 'development' ? $e->getMessage() : 'Internal Server Error'
-            ], JSON_UNESCAPED_UNICODE);
+            ];
+            
+            $this->output
+                ->set_status_header(500)
+                ->set_output(json_encode($error_response, JSON_UNESCAPED_UNICODE));
         }
     }
     

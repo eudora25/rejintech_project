@@ -90,9 +90,20 @@ class Auth extends CI_Controller
     private function verify_jwt_token($token)
     {
         try {
+            log_message('debug', 'JWT Verification - Token to verify: ' . substr($token, 0, 50) . '...');
+            log_message('debug', 'JWT Verification - Secret key length: ' . strlen($this->jwt_secret));
+            log_message('debug', 'JWT Verification - Algorithm: ' . $this->jwt_algorithm);
+            
             $decoded = JWT::decode($token, new Key($this->jwt_secret, $this->jwt_algorithm));
-            return (array) $decoded;
+            $decoded_array = (array) $decoded;
+            
+            log_message('debug', 'JWT Verification - Decode SUCCESS');
+            log_message('debug', 'JWT Verification - Decoded data: ' . json_encode($decoded_array));
+            
+            return $decoded_array;
         } catch (Exception $e) {
+            log_message('debug', 'JWT Verification - Decode FAILED: ' . $e->getMessage());
+            log_message('debug', 'JWT Verification - Exception class: ' . get_class($e));
             return false;
         }
     }
@@ -154,7 +165,7 @@ class Auth extends CI_Controller
      *         @OA\JsonContent(
      *             required={"username","password"},
      *             @OA\Property(property="username", type="string", example="admin", description="사용자명"),
-     *             @OA\Property(property="password", type="string", example="password", description="패스워드")
+     *             @OA\Property(property="password", type="string", example="admin123", description="패스워드")
      *         )
      *     ),
      *     @OA\Response(
@@ -334,7 +345,18 @@ class Auth extends CI_Controller
      */
     public function verify()
     {
+        // 디버깅을 위한 헤더 정보 로그
+        $headers = $this->input->request_headers();
+        log_message('debug', 'Verify endpoint - Headers: ' . json_encode($headers));
+        
         $token = $this->get_token_from_header();
+        
+        // 디버깅을 위한 토큰 정보 로그
+        log_message('debug', 'Verify endpoint - Token extracted: ' . ($token ? 'YES' : 'NO'));
+        if ($token) {
+            log_message('debug', 'Verify endpoint - Token length: ' . strlen($token));
+            log_message('debug', 'Verify endpoint - Token first 50 chars: ' . substr($token, 0, 50));
+        }
         
         if (!$token) {
             $this->output
@@ -347,6 +369,12 @@ class Auth extends CI_Controller
         }
 
         $user_data = $this->verify_jwt_token($token);
+
+        // 디버깅을 위한 검증 결과 로그
+        log_message('debug', 'Verify endpoint - Token validation: ' . ($user_data ? 'SUCCESS' : 'FAILED'));
+        if (!$user_data) {
+            log_message('debug', 'Verify endpoint - JWT verification failed');
+        }
 
         if (!$user_data) {
             $this->output
@@ -923,5 +951,308 @@ class Auth extends CI_Controller
                 'success' => $result,
                 'message' => $message
             ]));
+    }
+
+    /**
+     * @OA\Post(
+     *     path="/api/auth/change-password",
+     *     tags={"Authentication"},
+     *     summary="비밀번호 변경",
+     *     description="현재 로그인된 사용자의 비밀번호를 변경합니다.",
+     *     security={{"bearerAuth":{}}},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"current_password","new_password","confirm_password"},
+     *             @OA\Property(property="current_password", type="string", example="admin123", description="현재 비밀번호"),
+     *             @OA\Property(property="new_password", type="string", example="newPassword123", description="새 비밀번호 (최소 8자, 영문+숫자+특수문자 포함)"),
+     *             @OA\Property(property="confirm_password", type="string", example="newPassword123", description="새 비밀번호 확인")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="비밀번호 변경 성공",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=true),
+     *             @OA\Property(property="message", type="string", example="비밀번호가 성공적으로 변경되었습니다."),
+     *             @OA\Property(property="timestamp", type="string", example="2025-06-24T12:00:00+00:00")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=400,
+     *         description="잘못된 요청",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=false),
+     *             @OA\Property(property="message", type="string", example="모든 필드를 입력해주세요.")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="인증 실패",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=false),
+     *             @OA\Property(property="message", type="string", example="현재 비밀번호가 일치하지 않습니다.")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=422,
+     *         description="비밀번호 정책 위반",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=false),
+     *             @OA\Property(property="message", type="string", example="새 비밀번호는 최소 8자 이상이어야 하며, 영문, 숫자, 특수문자를 포함해야 합니다.")
+     *         )
+     *     )
+     * )
+     */
+    public function change_password()
+    {
+        try {
+            // JWT 토큰 검증
+            $token = $this->get_token_from_header();
+            if (!$token) {
+                $this->output->set_status_header(401);
+                $this->output->set_output(json_encode([
+                    'success' => false,
+                    'message' => 'Authorization 헤더가 필요합니다.',
+                    'timestamp' => date('c')
+                ], JSON_UNESCAPED_UNICODE));
+                return;
+            }
+
+            $decoded_token = $this->verify_jwt_token($token);
+            if (!$decoded_token) {
+                $this->output->set_status_header(401);
+                $this->output->set_output(json_encode([
+                    'success' => false,
+                    'message' => '유효하지 않은 토큰입니다.',
+                    'timestamp' => date('c')
+                ], JSON_UNESCAPED_UNICODE));
+                return;
+            }
+
+            // DB에서 토큰 검증
+            $token_hash = hash('sha256', $token);
+            $stored_token = $this->User_token_model->get_valid_token($token_hash);
+            if (!$stored_token) {
+                $this->output->set_status_header(401);
+                $this->output->set_output(json_encode([
+                    'success' => false,
+                    'message' => '토큰이 무효화되었거나 만료되었습니다.',
+                    'timestamp' => date('c')
+                ], JSON_UNESCAPED_UNICODE));
+                return;
+            }
+
+            // 요청 데이터 받기
+            $input = json_decode($this->input->raw_input_stream, true);
+            
+            if (!$input) {
+                $this->output->set_status_header(400);
+                $this->output->set_output(json_encode([
+                    'success' => false,
+                    'message' => '잘못된 JSON 형식입니다.',
+                    'timestamp' => date('c')
+                ], JSON_UNESCAPED_UNICODE));
+                return;
+            }
+
+            // 필수 필드 검증
+            $required_fields = ['current_password', 'new_password', 'confirm_password'];
+            foreach ($required_fields as $field) {
+                if (empty($input[$field])) {
+                    $this->output->set_status_header(400);
+                    $this->output->set_output(json_encode([
+                        'success' => false,
+                        'message' => '모든 필드를 입력해주세요.',
+                        'timestamp' => date('c')
+                    ], JSON_UNESCAPED_UNICODE));
+                    return;
+                }
+            }
+
+            $current_password = $input['current_password'];
+            $new_password = $input['new_password'];
+            $confirm_password = $input['confirm_password'];
+
+            // 새 비밀번호 확인 검증
+            if ($new_password !== $confirm_password) {
+                $this->output->set_status_header(400);
+                $this->output->set_output(json_encode([
+                    'success' => false,
+                    'message' => '새 비밀번호와 확인 비밀번호가 일치하지 않습니다.',
+                    'timestamp' => date('c')
+                ], JSON_UNESCAPED_UNICODE));
+                return;
+            }
+
+            // 새 비밀번호 정책 검증
+            $password_validation = $this->validate_password($new_password);
+            if (!$password_validation['valid']) {
+                $this->output->set_status_header(422);
+                $this->output->set_output(json_encode([
+                    'success' => false,
+                    'message' => $password_validation['message'],
+                    'timestamp' => date('c')
+                ], JSON_UNESCAPED_UNICODE));
+                return;
+            }
+
+            // 현재 사용자 정보 조회 (패스워드 포함)
+            $user_id = $decoded_token['user_id'];
+            $this->db->where('id', $user_id);
+            $query = $this->db->get('users');
+            $user = $query->row_array();
+
+            if (!$user) {
+                $this->output->set_status_header(404);
+                $this->output->set_output(json_encode([
+                    'success' => false,
+                    'message' => '사용자를 찾을 수 없습니다.',
+                    'timestamp' => date('c')
+                ], JSON_UNESCAPED_UNICODE));
+                return;
+            }
+
+            // 현재 비밀번호 검증
+            if (!password_verify($current_password, $user['password'])) {
+                // 로그인 로그에 비밀번호 변경 실패 기록
+                $this->Login_log_model->log_failed_login(
+                    $user['username'],
+                    $this->get_client_ip(),
+                    '비밀번호 변경 시도 - 현재 비밀번호 불일치',
+                    $this->get_user_agent()
+                );
+
+                $this->output->set_status_header(401);
+                $this->output->set_output(json_encode([
+                    'success' => false,
+                    'message' => '현재 비밀번호가 일치하지 않습니다.',
+                    'timestamp' => date('c')
+                ], JSON_UNESCAPED_UNICODE));
+                return;
+            }
+
+            // 현재 비밀번호와 새 비밀번호가 같은지 확인
+            if ($current_password === $new_password) {
+                $this->output->set_status_header(400);
+                $this->output->set_output(json_encode([
+                    'success' => false,
+                    'message' => '새 비밀번호는 현재 비밀번호와 달라야 합니다.',
+                    'timestamp' => date('c')
+                ], JSON_UNESCAPED_UNICODE));
+                return;
+            }
+
+            // 비밀번호 업데이트
+            $update_data = [
+                'password' => password_hash($new_password, PASSWORD_DEFAULT),
+                'updated_at' => date('Y-m-d H:i:s')
+            ];
+
+            $this->db->where('id', $user_id);
+            $result = $this->db->update('users', $update_data);
+
+            if ($result) {
+                // 성공 로그 기록 (비밀번호 변경 성공을 위한 커스텀 로그)
+                $log_data = [
+                    'username' => $user['username'],
+                    'user_id' => $user['id'],
+                    'ip_address' => $this->get_client_ip(),
+                    'user_agent' => $this->get_user_agent(),
+                    'login_status' => 'success',
+                    'failure_reason' => '비밀번호 변경 성공'
+                ];
+                $this->Login_log_model->save_login_log($log_data);
+
+                // 토큰 업데이트 (마지막 사용 시간)
+                $this->User_token_model->update_last_used($token_hash);
+
+                $this->output->set_status_header(200);
+                $this->output->set_output(json_encode([
+                    'success' => true,
+                    'message' => '비밀번호가 성공적으로 변경되었습니다.',
+                    'timestamp' => date('c')
+                ], JSON_UNESCAPED_UNICODE));
+            } else {
+                $this->output->set_status_header(500);
+                $this->output->set_output(json_encode([
+                    'success' => false,
+                    'message' => '비밀번호 변경 중 오류가 발생했습니다.',
+                    'timestamp' => date('c')
+                ], JSON_UNESCAPED_UNICODE));
+            }
+
+        } catch (Exception $e) {
+            log_message('error', 'Password change error: ' . $e->getMessage());
+            
+            $this->output->set_status_header(500);
+            $this->output->set_output(json_encode([
+                'success' => false,
+                'message' => '서버 오류가 발생했습니다.',
+                'timestamp' => date('c')
+            ], JSON_UNESCAPED_UNICODE));
+        }
+    }
+
+    /**
+     * 비밀번호 정책 검증
+     * 
+     * @param string $password 검증할 비밀번호
+     * @return array 검증 결과
+     */
+    private function validate_password($password)
+    {
+        // 최소 길이 검증
+        if (strlen($password) < 8) {
+            return [
+                'valid' => false,
+                'message' => '비밀번호는 최소 8자 이상이어야 합니다.'
+            ];
+        }
+
+        // 최대 길이 검증
+        if (strlen($password) > 50) {
+            return [
+                'valid' => false,
+                'message' => '비밀번호는 최대 50자까지 가능합니다.'
+            ];
+        }
+
+        // 영문 포함 검증
+        if (!preg_match('/[a-zA-Z]/', $password)) {
+            return [
+                'valid' => false,
+                'message' => '비밀번호는 영문자를 포함해야 합니다.'
+            ];
+        }
+
+        // 숫자 포함 검증
+        if (!preg_match('/[0-9]/', $password)) {
+            return [
+                'valid' => false,
+                'message' => '비밀번호는 숫자를 포함해야 합니다.'
+            ];
+        }
+
+        // 특수문자 포함 검증
+        if (!preg_match('/[!@#$%^&*()_+\-=\[\]{};\':"\\|,.<>\/?]/', $password)) {
+            return [
+                'valid' => false,
+                'message' => '비밀번호는 특수문자를 포함해야 합니다.'
+            ];
+        }
+
+        // 공백 검증
+        if (preg_match('/\s/', $password)) {
+            return [
+                'valid' => false,
+                'message' => '비밀번호에는 공백을 포함할 수 없습니다.'
+            ];
+        }
+
+        return [
+            'valid' => true,
+            'message' => '비밀번호가 정책을 만족합니다.'
+        ];
     }
 } 

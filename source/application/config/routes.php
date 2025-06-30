@@ -65,6 +65,7 @@ $route['api/auth/verify'] = 'api/auth/verify';
 $route['api/auth/profile'] = 'api/auth/profile';
 $route['api/auth/check-login'] = 'api/auth/check_login';
 $route['api/auth/logout'] = 'api/auth/logout';
+$route['api/auth/change-password'] = 'api/auth/change_password';
 $route['api/auth/login-logs'] = 'api/auth/login_logs';
 $route['api/auth/login-statistics'] = 'api/auth/login_statistics';
 
@@ -82,6 +83,7 @@ $route['api/users/(:num)'] = 'api/users/get/$1';
 
 // 조달청 데이터 조회 API 라우팅
 $route['api/procurement/delivery-requests'] = 'api/procurement/delivery_requests';
+$route['api/procurement/debug-delivery-requests'] = 'api/procurement/debug_delivery_requests';
 $route['api/procurement/statistics/institutions'] = 'api/procurement/institution_statistics';
 $route['api/procurement/statistics/companies'] = 'api/procurement/company_statistics';
 $route['api/procurement/statistics/products'] = 'api/procurement/product_statistics';
@@ -91,3 +93,7 @@ $route['api/procurement/filter-options'] = 'api/procurement/filter_options';
 $route['batch/procurement/sync'] = 'batch/Procurement_sync/sync_delivery_requests';
 $route['batch/procurement/status'] = 'batch/Procurement_sync/status';
 $route['batch/procurement/test'] = 'batch/Procurement_sync/test_api';
+
+// 데이터 정규화 배치 작업 라우팅
+$route['batch/data_normalization/normalize'] = 'batch/data_normalization/normalize_delivery_data';
+$route['batch/data_normalization/status'] = 'batch/data_normalization/status';

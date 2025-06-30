@@ -78,7 +78,7 @@ class User_token_model extends CI_Model
             $token_info = $query->row_array();
             
             // 마지막 사용 시간 업데이트
-            $this->update_last_used($token_info['id']);
+            $this->update_last_used($token_hash);
             
             return $token_info;
         }
@@ -138,14 +138,38 @@ class User_token_model extends CI_Model
     }
 
     /**
-     * 마지막 사용 시간 업데이트
+     * 토큰 해시로 유효한 토큰 조회
      * 
-     * @param int $token_id 토큰 ID
+     * @param string $token_hash 토큰 해시
+     * @return array|false 토큰 정보 또는 false
+     */
+    public function get_valid_token($token_hash)
+    {
+        $this->db->select('ut.*, u.username, u.email');
+        $this->db->from($this->table . ' ut');
+        $this->db->join('users u', 'ut.user_id = u.id', 'left');
+        $this->db->where('ut.token_hash', $token_hash);
+        $this->db->where('ut.is_active', 1);
+        $this->db->where('ut.expires_at >', date('Y-m-d H:i:s'));
+        
+        $query = $this->db->get();
+        
+        if ($query->num_rows() == 1) {
+            return $query->row_array();
+        }
+        
+        return false;
+    }
+
+    /**
+     * 마지막 사용 시간 업데이트 (토큰 해시 기준)
+     * 
+     * @param string $token_hash 토큰 해시
      * @return bool 성공여부
      */
-    private function update_last_used($token_id)
+    public function update_last_used($token_hash)
     {
-        $this->db->where('id', $token_id);
+        $this->db->where('token_hash', $token_hash);
         return $this->db->update($this->table, ['last_used_at' => date('Y-m-d H:i:s')]);
     }
 

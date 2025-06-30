@@ -12,18 +12,19 @@ class Test extends CI_Controller
         parent::__construct();
         
         // JSON 응답 헤더 설정
-        header('Content-Type: application/json; charset=utf-8');
+        $this->output->set_content_type('application/json', 'utf-8');
         
         // CORS 헤더 설정 (개발 환경용)
         if (ENVIRONMENT === 'development') {
-            header('Access-Control-Allow-Origin: *');
-            header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS');
-            header('Access-Control-Allow-Headers: Content-Type, Authorization');
+            $this->output->set_header('Access-Control-Allow-Origin: *');
+            $this->output->set_header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS');
+            $this->output->set_header('Access-Control-Allow-Headers: Content-Type, Authorization');
         }
         
         // OPTIONS 요청 처리 (CORS preflight)
         if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
-            http_response_code(200);
+            $this->output->set_status_header(200);
+            $this->output->_display();
             exit();
         }
     }
@@ -46,8 +47,9 @@ class Test extends CI_Controller
                 ]
             ];
             
-            http_response_code(200);
-            echo json_encode($response, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+            $this->output
+                ->set_status_header(200)
+                ->set_output(json_encode($response, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
             
         } catch (Exception $e) {
             $this->_send_error_response(500, '서버 내부 오류가 발생했습니다', $e->getMessage());
@@ -80,8 +82,9 @@ class Test extends CI_Controller
                     'timestamp' => date('c')
                 ];
                 
-                http_response_code(200);
-                echo json_encode($response, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+                $this->output
+                    ->set_status_header(200)
+                    ->set_output(json_encode($response, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
                 
             } else {
                 $this->_send_error_response(500, '데이터베이스 연결 실패');
@@ -120,8 +123,9 @@ class Test extends CI_Controller
                 'method' => $_SERVER['REQUEST_METHOD']
             ];
             
-            http_response_code(200);
-            echo json_encode($response, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+            $this->output
+                ->set_status_header(200)
+                ->set_output(json_encode($response, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
             
         } catch (Exception $e) {
             $this->_send_error_response(500, '요청 처리 중 오류가 발생했습니다', $e->getMessage());
@@ -149,8 +153,9 @@ class Test extends CI_Controller
                 'timestamp' => date('c')
             ];
             
-            http_response_code(200);
-            echo json_encode($response, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+            $this->output
+                ->set_status_header(200)
+                ->set_output(json_encode($response, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
             
         } catch (Exception $e) {
             $this->_send_error_response(500, '파라미터 처리 중 오류가 발생했습니다', $e->getMessage());
@@ -162,8 +167,6 @@ class Test extends CI_Controller
      */
     private function _send_error_response($code, $message, $detail = null)
     {
-        http_response_code($code);
-        
         $response = [
             'status' => 'error',
             'message' => $message,
@@ -175,6 +178,8 @@ class Test extends CI_Controller
             $response['detail'] = $detail;
         }
         
-        echo json_encode($response, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+        $this->output
+            ->set_status_header($code)
+            ->set_output(json_encode($response, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
     }
 } 

@@ -2,15 +2,16 @@
 
 ## 📋 프로젝트 개요
 
-Rejintech 프로젝트는 Docker 기반의 현대적인 웹 애플리케이션 개발 환경으로, CodeIgniter 프레임워크와 Swagger API 문서화가 통합된 완전한 개발 솔루션입니다.
+Rejintech 프로젝트는 조달청 데이터 관리 및 조회를 위한 REST API 시스템입니다. Docker 기반의 현대적인 웹 애플리케이션으로, JWT 기반 인증, 로그인 로그 관리, 토큰 기반 세션 관리, 그리고 조달청 데이터 조회 API가 완전히 구현되어 있습니다.
 
 ### 🚀 주요 기능
 - **완전한 Docker 환경**: 개발부터 배포까지 일관된 환경
 - **CodeIgniter 3.x**: 안정적이고 검증된 PHP 프레임워크
-- **JWT 인증 시스템**: Firebase JWT 기반 보안 인증 준비
+- **JWT 인증 시스템**: Firebase JWT 기반 완전 구현
 - **Swagger UI 통합**: 인터랙티브 API 문서 및 테스트 환경
 - **PHP 8.1 호환성**: 최신 PHP 버전 완전 지원
 - **MariaDB 통합**: 고성능 데이터베이스 솔루션
+- **조달청 데이터 API**: 완전 구현된 조회 및 통계 API
 
 ### 🏗️ 기술 스택
 - **컨테이너화**: Docker & Docker Compose
@@ -18,6 +19,7 @@ Rejintech 프로젝트는 Docker 기반의 현대적인 웹 애플리케이션 �
 - **프레임워크**: CodeIgniter 3.x
 - **데이터베이스**: MariaDB 10.5+
 - **API 문서**: Swagger UI 4.15.5
+- **인증**: JWT (Firebase PHP-JWT)
 - **프로세스 관리**: Supervisor
 
 ## 🚀 빠른 시작
@@ -43,17 +45,20 @@ docker-compose ps
 
 ### 3. 서비스 접속 및 테스트
 - **🏠 메인 페이지**: http://localhost/
+- **📖 Swagger UI**: http://localhost/source/swagger-ui/
 - **🔌 API 테스트**: http://localhost/api/test
 - **📊 데이터베이스 테스트**: http://localhost/api/test/database
-- **📖 Swagger UI**: http://localhost/swagger-ui/
 
-### 4. 기본 기능 확인
+### 4. 로그인 및 API 테스트
 ```bash
-# API 상태 확인
-curl http://localhost/api/test
+# 로그인 (JWT 토큰 발급)
+curl -X POST http://localhost/api/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"username": "admin", "password": "admin123"}'
 
-# 데이터베이스 연결 테스트
-curl http://localhost/api/test/database
+# 조달청 데이터 조회 (토큰 필요)
+curl -X GET "http://localhost/api/procurement/delivery-requests?page=1&size=20" \
+  -H "Authorization: Bearer YOUR_JWT_TOKEN"
 ```
 
 ## 📁 디렉토리 구조
@@ -64,68 +69,92 @@ rejintech_project/
 ├── images/ubuntu/              # Docker 이미지 설정
 ├── source/                     # CodeIgniter 애플리케이션
 │   ├── application/            # CI 애플리케이션 로직
+│   │   ├── controllers/api/    # API 컨트롤러 (Auth, Procurement 등)
+│   │   ├── models/            # 데이터 모델
+│   │   └── config/            # 설정 파일 (JWT 등)
 │   ├── system/                # CodeIgniter 시스템 파일
 │   ├── swagger-ui/            # Swagger UI 인터페이스
 │   └── api/docs/              # OpenAPI 스펙 파일
 ├── mariadb_data/              # 데이터베이스 영구 저장소
-└── doc/                       # 종합 프로젝트 문서
+└── doc/                       # 프로젝트 문서
 ```
 
-## 🎯 주요 URL 및 엔드포인트
+## 🎯 API 엔드포인트
 
-### 🌐 웹 인터페이스
-| 서비스 | URL | 설명 |
-|--------|-----|------|
-| 메인 페이지 | `http://localhost/` | CodeIgniter 메인 대시보드 |
-| Swagger UI | `http://localhost/swagger-ui/` | 인터랙티브 API 문서 |
+### 🔐 인증 관련
+| 메서드 | 엔드포인트 | 설명 |
+|--------|------------|------|
+| POST | `/api/auth/login` | 사용자 로그인 (JWT 토큰 발급) |
+| GET | `/api/auth/verify` | JWT 토큰 검증 |
+| GET | `/api/auth/profile` | 사용자 프로필 조회 |
+| POST | `/api/auth/check-login` | 로그인 상태 확인 |
+| POST | `/api/auth/logout` | 로그아웃 |
+| **POST** | **`/api/auth/change-password`** | **비밀번호 변경** ⭐ |
+| GET | `/api/auth/login-logs` | 로그인 로그 조회 |
+| GET | `/api/auth/login-statistics` | 로그인 통계 조회 |
 
-### 🔌 API 엔드포인트
-| 엔드포인트 | 메서드 | 설명 |
-|------------|--------|------|
-| `/api/test` | GET | 서버 상태 확인 |
-| `/api/test/database` | GET | 데이터베이스 연결 테스트 |
-| `/api/test/params` | GET | GET 파라미터 테스트 |
-| `/api/test/echo` | POST | POST 데이터 에코 테스트 |
-| `/api/auth/login` | POST | 사용자 로그인 (JWT 토큰 발급) |
-| `/api/auth/verify` | POST | JWT 토큰 검증 |
-| `/api/auth/profile` | GET | 사용자 프로필 조회 |
-| `/api/auth/check-login` | POST | 로그인 상태 확인 |
-| `/api/auth/logout` | POST | 로그아웃 |
-| `/api/auth/login-logs` | GET | 로그인 로그 조회 |
-| `/api/auth/login-statistics` | GET | 로그인 통계 조회 |
-| `/api/docs/openapi.json` | GET | OpenAPI 3.0 스펙 |
+### 🏢 조달청 데이터
+| 메서드 | 엔드포인트 | 설명 |
+|--------|------------|------|
+| GET | `/api/procurement/delivery-requests` | 조달청 데이터 전체 리스트 조회 |
+| GET | `/api/procurement/statistics/institutions` | 수요기관별 통계 조회 |
+| GET | `/api/procurement/statistics/companies` | 업체별 통계 조회 |
+| GET | `/api/procurement/statistics/products` | 품목별 통계 조회 |
+| GET | `/api/procurement/filter-options` | 필터 옵션 조회 |
 
-### 🗄️ 데이터베이스 접속
+### 🔧 테스트 API
+| 메서드 | 엔드포인트 | 설명 |
+|--------|------------|------|
+| GET | `/api/test` | 서버 상태 확인 |
+| GET | `/api/test/database` | 데이터베이스 연결 테스트 |
+| GET | `/api/docs/openapi.json` | OpenAPI 3.0 스펙 |
+
+## 🗄️ 데이터베이스 정보
+
+### 접속 정보
 - **호스트**: localhost:3306
 - **데이터베이스**: jintech
 - **사용자**: jintech / jin2010!!
 
+### 주요 테이블
+- **users** (2건) - 사용자 정보
+- **user_tokens** (6건) - JWT 토큰 관리
+- **login_logs** (19건) - 로그인 이력
+- **delivery_requests** (437건) - 조달청 납품요구 메인
+- **delivery_request_items** (992건) - 조달청 납품요구 상세
+- **institutions** (147건) - 수요기관 마스터
+- **companies** (280건) - 업체 마스터
+- **products** (758건) - 물품 마스터
+
 ## 📚 문서 가이드
 
-### 📋 종합 문서
-1. **[PROJECT-SUMMARY.md](PROJECT-SUMMARY.md)** - 📋 **전체 작업 요약** (이 문서 권장)
-2. **[README.md](README.md)** - 🏠 프로젝트 개요 (이 파일)
+### 📂 통합 문서 인덱스
+**📖 [PROJECT-DOCUMENTATION-INDEX.md](PROJECT-DOCUMENTATION-INDEX.md)** - **📚 전체 문서 통합 인덱스** ⭐ **신규 추가**
+- 모든 문서의 체계적 분류 및 정리
+- 문서 읽기 순서 가이드
+- 빠른 링크 및 검색 지원
+
+### 📋 핵심 문서
+1. **[README.md](README.md)** - 🏠 **이 파일** (프로젝트 메인 가이드)
+2. **[FINAL-PROJECT-STATUS.md](FINAL-PROJECT-STATUS.md)** - 📊 **완료 현황 상세 문서** ⭐
 
 ### 🔧 상세 가이드
-3. **[development-environment.md](development-environment.md)** - 개발 환경 구축 가이드
-4. **[configuration-files.md](configuration-files.md)** - 설정 파일 상세 가이드
-5. **[codeigniter-setup.md](codeigniter-setup.md)** - CodeIgniter 설정 가이드
+3. **[configuration-files.md](configuration-files.md)** - 설정 파일 상세 가이드
+4. **[swagger-quick-start.md](swagger-quick-start.md)** - Swagger 빠른 시작
 
-### 🌐 API 문서화
-6. **[swagger-integration.md](swagger-integration.md)** - Swagger 통합 가이드
-7. **[swagger-quick-start.md](swagger-quick-start.md)** - Swagger 빠른 시작
+### 📋 분석 및 설계
+5. **[API-REQUIREMENTS-ANALYSIS.md](API-REQUIREMENTS-ANALYSIS.md)** - API 요구사항 분석
+6. **[API-DATABASE-DESIGN.md](API-DATABASE-DESIGN.md)** - 데이터베이스 설계 문서
 
-### ⏰ 배치 작업
-8. **[batch-execution-guide.md](batch-execution-guide.md)** - 조달청 데이터 동기화 배치 실행 및 crontab 설정
+### ⏰ 배치 및 로그
+7. **[batch-execution-guide.md](batch-execution-guide.md)** - 조달청 데이터 배치 가이드
+8. **[login-logs-guide.md](login-logs-guide.md)** - 로그인 로그 시스템 가이드
+9. **[token-system-guide.md](token-system-guide.md)** - 토큰 저장 및 검증 가이드
 
-### 🔐 보안 및 로그
-9. **[login-logs-guide.md](login-logs-guide.md)** - 로그인 로그 시스템 가이드 ⭐
-10. **[token-system-guide.md](token-system-guide.md)** - 토큰 저장 및 검증 시스템 가이드 ⭐
+### 🔐 보안 가이드
+10. **[password-change-guide.md](password-change-guide.md)** - **비밀번호 변경 API 가이드** ⭐ **신규**
 
-### 📊 현재 상태 및 요구사항
-11. **[CURRENT-SYSTEM-STATUS.md](CURRENT-SYSTEM-STATUS.md)** - **전체 시스템 현재 상태 종합 문서** ⭐ **신규**
-12. **[API-REQUIREMENTS-ANALYSIS.md](API-REQUIREMENTS-ANALYSIS.md)** - **클라이언트 API 요구사항 분석** ⭐ **신규**
-13. **[API-DATABASE-DESIGN.md](API-DATABASE-DESIGN.md)** - **API용 정규화된 데이터베이스 설계** ⭐ **신규**
+> 💡 **팁**: 전체 문서 구조와 읽기 순서는 [통합 문서 인덱스](PROJECT-DOCUMENTATION-INDEX.md)를 참조하세요!
 
 ## 🔧 개발 환경 설정
 
@@ -142,6 +171,33 @@ docker exec -it rejintech-mariadb mysql -u jintech -p
 docker-compose down
 ```
 
+### API 테스트 예시
+```bash
+# 1. 로그인 (JWT 토큰 발급)
+TOKEN=$(curl -s -X POST http://localhost/api/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"username": "admin", "password": "admin123"}' | \
+  jq -r '.data.token')
+
+# 2. 비밀번호 변경
+curl -X POST "http://localhost/api/auth/change-password" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $TOKEN" \
+  -d '{
+    "current_password": "admin123",
+    "new_password": "newPassword123!",
+    "confirm_password": "newPassword123!"
+  }'
+
+# 3. 조달청 데이터 조회
+curl -X GET "http://localhost/api/procurement/delivery-requests?page=1&size=10&type=CSO" \
+  -H "Authorization: Bearer $TOKEN"
+
+# 4. 통계 조회
+curl -X GET "http://localhost/api/procurement/statistics/institutions" \
+  -H "Authorization: Bearer $TOKEN"
+```
+
 ## 🆘 문제 해결
 
 ### 일반적인 문제들
@@ -155,11 +211,15 @@ sudo netstat -tulpn | grep -E ':80|:443|:3306'
 docker-compose down && docker-compose up -d
 ```
 
-#### 2. 권한 문제
+#### 2. 인증 오류
 ```bash
-# 파일 권한 설정
-docker exec -it rejintech-workspace chown -R www-data:www-data /var/www/html
-docker exec -it rejintech-workspace chmod -R 777 /var/www/html/application/cache
+# JWT 토큰 확인
+curl -X GET http://localhost/api/auth/verify \
+  -H "Authorization: Bearer YOUR_TOKEN"
+
+# 로그인 로그 확인
+curl -X GET http://localhost/api/auth/login-logs \
+  -H "Authorization: Bearer YOUR_TOKEN"
 ```
 
 #### 3. 로그 확인
@@ -172,15 +232,23 @@ docker-compose logs -f rejintech-workspace
 docker-compose logs -f rejintech-mariadb
 ```
 
-## 🎯 다음 단계
+## 📊 시스템 현황
 
-### 즉시 시작 가능한 작업
-1. **실제 API 개발**: `/source/application/controllers/api/` 디렉토리에서 시작
-2. **데이터베이스 설계**: MariaDB에 비즈니스 테이블 생성
-3. **JWT 인증 구현**: 이미 설치된 Firebase JWT 라이브러리 활용
-4. **프론트엔드 연동**: API를 호출하는 웹 또는 모바일 앱 개발
+### 🎯 **프로젝트 상태**: ✅ 완전 구현 완료
+- **인증 시스템**: JWT 기반 완전 구현
+- **조달청 API**: 전체 조회/통계 API 완료
+- **데이터베이스**: 정규화된 구조 완성 (13개 테이블, 2,199건 데이터)
+- **API 문서**: Swagger UI 완전 통합
+- **보안**: 이중 토큰 검증 시스템
+
+### 📈 **데이터 현황**
+- **총 납품요구 금액**: ₩6,237,229,274
+- **납품요구 항목**: 992건
+- **수요기관**: 147개
+- **계약업체**: 280개
+- **우수제품 비율**: 7.06%
 
 ---
 
 **🎉 현재 상태**: 완전한 개발 환경 구축 완료!  
-**⭐ 추천**: [PROJECT-SUMMARY.md](PROJECT-SUMMARY.md)에서 전체 작업 내용을 확인하세요. 
+**⭐ 추천**: [FINAL-PROJECT-STATUS.md](FINAL-PROJECT-STATUS.md)에서 상세 완료 현황을 확인하세요. 

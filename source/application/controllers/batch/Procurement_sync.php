@@ -47,11 +47,23 @@ class Procurement_sync extends CI_Controller
 
     /**
      * 납품요구 상세정보 동기화 메인 함수
+     * 
+     * @param string $end_date 조회 종료일자 (YYYYMMDD 형식, 기본값: 오늘)
      */
-    public function sync_delivery_requests()
+    public function sync_delivery_requests($end_date = null)
     {
         $this->output_message("=== 조달청 납품요구 상세정보 동기화 시작 ===");
         $this->output_message("시작 시간: " . date('Y-m-d H:i:s'));
+        
+        // 날짜 파라미터 처리
+        if (empty($end_date)) {
+            $end_date = date('Ymd');
+        }
+        
+        // 시작일자는 종료일자의 전날
+        $start_date = date('Ymd', strtotime($end_date . ' -1 day'));
+        
+        $this->output_message("조회 기간: {$start_date} ~ {$end_date}");
         
         // 배치 로그 시작
         $this->batch_log_id = $this->Delivery_request_model->start_batch_log($this->batch_name);
@@ -61,7 +73,8 @@ class Procurement_sync extends CI_Controller
             'total' => 0,
             'success' => 0,
             'error' => 0,
-            'api_calls' => 0
+            'api_calls' => 0,
+            'filtered_out' => 0  // 필터링으로 제외된 건수 추가
         );
         
         try {
@@ -75,14 +88,10 @@ class Procurement_sync extends CI_Controller
                 // API 호출 파라미터 설정
                 $api_params = array(
                     'pageNo' => $page_no,
-                    'numOfRows' => 100
+                    'numOfRows' => 100,
+                    'startDate' => $start_date,
+                    'endDate' => $end_date
                 );
-                
-                // 날짜 조건 추가 (2025년 1월 1일부터 현재까지)
-                $end_date = date('Ymd');
-                $start_date = '20200101';
-                $api_params['startDate'] = $start_date;
-                $api_params['endDate'] = $end_date;
                 
                 // API 호출
                 $api_result = $this->procurement_api->get_delivery_request_details($api_params);
@@ -143,11 +152,21 @@ class Procurement_sync extends CI_Controller
                             continue;
                         }
                         
-                        // DB 저장
-                        $saved_id = $this->Delivery_request_model->save_delivery_request($transformed_data);
+                        // DB 저장 (필터링 적용)
+                        $saved_id = $this->Delivery_request_model->save_delivery_request_with_filtering($transformed_data, true);
+                        
+                        if ($saved_id === false) {
+                            // 필터링으로 제외된 경우
+                            $business_number = isset($transformed_data['cntrct_corp_bizno']) ? $transformed_data['cntrct_corp_bizno'] : 'N/A';
+                            $company_name = isset($transformed_data['corp_nm']) ? $transformed_data['corp_nm'] : 'Unknown';
+                            $this->output_message("필터링 제외: 사업자번호 {$business_number} ({$company_name})", 'INFO');
+                            $stats['filtered_out']++;
+                        } else {
+                            // 정상 저장된 경우
+                            $stats['success']++;
+                        }
                         
                         $stats['total']++;
-                        $stats['success']++;
                         
                         if ($stats['total'] % 10 === 0) {
                             $this->output_message("처리 완료: {$stats['total']}건 (성공: {$stats['success']}, 오류: {$stats['error']})");
@@ -181,6 +200,7 @@ class Procurement_sync extends CI_Controller
             $this->output_message("\n=== 동기화 완료 ===");
             $this->output_message("총 처리 건수: {$stats['total']}");
             $this->output_message("성공: {$stats['success']}");
+            $this->output_message("필터링 제외: {$stats['filtered_out']}");
             $this->output_message("오류: {$stats['error']}");
             $this->output_message("API 호출 횟수: {$stats['api_calls']}");
             
@@ -248,16 +268,25 @@ class Procurement_sync extends CI_Controller
     }
 
     /**
-     * 테스트 API 호출
+     * API 테스트 함수
+     * 
+     * @param string $end_date 조회 종료일자 (YYYYMMDD 형식, 기본값: 오늘)
      */
-    public function test_api()
+    public function test_api($end_date = null)
     {
-        $this->output_message("=== API 테스트 ===");
+        $this->output_message("=== 조달청 API 테스트 시작 ===");
         
-        // 테스트 파라미터 (2025년 1월 1일부터 현재까지)
-        $end_date = date('Ymd');
-        $start_date = '20250101';
+        // 날짜 파라미터 처리
+        if (empty($end_date)) {
+            $end_date = date('Ymd');
+        }
         
+        // 시작일자는 종료일자의 전날
+        $start_date = date('Ymd', strtotime($end_date . ' -1 day'));
+        
+        $this->output_message("조회 기간: {$start_date} ~ {$end_date}");
+        
+        // 테스트 파라미터
         $test_params = array(
             'pageNo' => 1,
             'numOfRows' => 10,
@@ -267,7 +296,7 @@ class Procurement_sync extends CI_Controller
         );
         
         $this->output_message("테스트 파라미터: " . json_encode($test_params));
-        $this->output_message("조회 기간: {$start_date} ~ {$end_date} (2025년 1월 1일부터 현재까지)");
+        $this->output_message("조회 기간: {$start_date} ~ {$end_date}");
         
         // API 호출
         $result = $this->procurement_api->get_delivery_request_details($test_params);
@@ -307,6 +336,70 @@ class Procurement_sync extends CI_Controller
             }
         } else {
             $this->output_message("오류 메시지: " . $result['error_message']);
+        }
+    }
+
+    /**
+     * 필터링 상태 확인
+     */
+    public function filtering_status()
+    {
+        $this->output_message("=== 필터링 상태 확인 ===");
+        
+        // 필터링 통계 조회
+        $filtering_stats = $this->Delivery_request_model->get_filtering_statistics();
+        
+        $this->output_message("\n--- filtering_companies 테이블 현황 ---");
+        $this->output_message("전체 등록 업체: " . number_format($filtering_stats['total_filtering_companies']));
+        $this->output_message("활성화된 업체: " . number_format($filtering_stats['active_filtering_companies']));
+        
+        if ($filtering_stats['delivery_matching']) {
+            $matching = $filtering_stats['delivery_matching'];
+            
+            $this->output_message("\n--- delivery_request_details 매칭 현황 ---");
+            $this->output_message("전체 납품요구 데이터: " . number_format($matching['total_records']));
+            $this->output_message("필터링 업체와 매칭: " . number_format($matching['matched_records']));
+            $this->output_message("미매칭 (사업자번호 있음): " . number_format($matching['unmatched_records']));
+            $this->output_message("사업자번호 없음: " . number_format($matching['no_business_number_records']));
+            
+            // 매칭률 계산
+            $total_with_bizno = $matching['matched_records'] + $matching['unmatched_records'];
+            if ($total_with_bizno > 0) {
+                $match_rate = round(($matching['matched_records'] / $total_with_bizno) * 100, 2);
+                $this->output_message("매칭률: {$match_rate}% ({$matching['matched_records']}/{$total_with_bizno})");
+            }
+        }
+        
+        // 샘플 매칭 데이터 조회
+        $this->output_message("\n--- 매칭된 업체 샘플 (최근 5건) ---");
+        $sample_matched = $this->db->select('drd.cntrct_corp_bizno, drd.corp_nm, fc.company_name, COUNT(*) as delivery_count')
+                                  ->from('delivery_request_details drd')
+                                  ->join('filtering_companies fc', 'drd.cntrct_corp_bizno = fc.business_number')
+                                  ->where('fc.is_active', 1)
+                                  ->group_by('drd.cntrct_corp_bizno')
+                                  ->order_by('delivery_count', 'DESC')
+                                  ->limit(5)
+                                  ->get()
+                                  ->result_array();
+        
+        foreach ($sample_matched as $company) {
+            $this->output_message("- {$company['cntrct_corp_bizno']}: {$company['corp_nm']} (납품요구: {$company['delivery_count']}건)");
+        }
+        
+        // 미매칭 업체 샘플
+        $this->output_message("\n--- 미매칭 업체 샘플 (상위 5건) ---");
+        $sample_unmatched = $this->db->select('drd.cntrct_corp_bizno, drd.corp_nm, COUNT(*) as delivery_count')
+                                    ->from('delivery_request_details drd')
+                                    ->where('drd.cntrct_corp_bizno IS NOT NULL')
+                                    ->where('drd.cntrct_corp_bizno NOT IN (SELECT business_number FROM filtering_companies WHERE is_active = 1)', null, false)
+                                    ->group_by('drd.cntrct_corp_bizno')
+                                    ->order_by('delivery_count', 'DESC')
+                                    ->limit(5)
+                                    ->get()
+                                    ->result_array();
+        
+        foreach ($sample_unmatched as $company) {
+            $this->output_message("- {$company['cntrct_corp_bizno']}: {$company['corp_nm']} (납품요구: {$company['delivery_count']}건)");
         }
     }
 
