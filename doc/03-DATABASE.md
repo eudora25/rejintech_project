@@ -1,6 +1,25 @@
-# 데이터베이스 스키마 문서
+# 데이터베이스 설계 및 운영 문서
 
-## 정규화된 테이블 구조
+## 목차
+1. [데이터베이스 개요](#데이터베이스-개요)
+2. [테이블 구조](#테이블-구조)
+3. [인덱스 및 제약조건](#인덱스-및-제약조건)
+4. [데이터베이스 운영](#데이터베이스-운영)
+
+## 데이터베이스 개요
+
+### 기본 정보
+- DBMS: MariaDB 10.6
+- 문자셋: utf8mb4
+- 콜레이션: utf8mb4_unicode_ci
+- 스토리지 엔진: InnoDB
+
+### 데이터베이스 구성
+- 데이터베이스명: jintech
+- 사용자: jintech (운영), jintech_read (읽기 전용)
+- 백업: 일일 전체 백업, 시간별 증분 백업
+
+## 테이블 구조
 
 ### product_categories (제품 카테고리)
 - `id` (PK): 카테고리 ID
@@ -38,7 +57,7 @@
 - `id` (PK): 업체 ID
 - `business_number`: 사업자 번호
 - `company_name`: 업체 명
-- `company_type`: 업체 유형 (대기업/중소기업/소상공인)
+- `company_type`: 업체 유형
 - `is_active`: 활성화 여부
 - `created_at`: 생성일시
 - `updated_at`: 수정일시
@@ -83,64 +102,63 @@
 - `created_at`: 생성일시
 - `updated_at`: 수정일시
 
-## 유니크 키 제약조건
+## 인덱스 및 제약조건
 
-### product_categories
-- `uk_category_code`: (category_code)
+### 유니크 키
+- product_categories: `uk_category_code`
+- products: `uk_product_code`
+- institutions: `uk_institution_code`, `uk_region_code`
+- companies: `uk_business_number`
+- contracts: `uk_contract`
+- delivery_requests: `uk_delivery_request`
+- delivery_request_items: `uk_delivery_request_item`
 
-### products
-- `uk_product_code`: (product_code)
+### 외래 키
+- product_categories: `fk_category_parent`
+- products: `fk_product_category`
+- delivery_requests: 
+  - `fk_delivery_request_contract`
+  - `fk_delivery_request_institution`
+  - `fk_delivery_request_company`
+- delivery_request_items:
+  - `fk_delivery_request_item_request`
+  - `fk_delivery_request_item_product`
 
-### institutions
-- `uk_institution_code`: (institution_code)
-- `uk_region_code`: (region_code)
+### 인덱스
+- institutions:
+  - `idx_region`
+  - `idx_institution_name`
+- delivery_requests:
+  - `idx_delivery_date`
+  - `idx_excellent_product`
+  - `idx_company`
+  - `idx_institution`
+- delivery_request_items:
+  - `idx_product`
+  - `idx_excellent_product`
 
-### companies
-- `uk_business_number`: (business_number)
+## 데이터베이스 운영
 
-### contracts
-- `uk_contract`: (contract_number, contract_change_order)
+### 백업 정책
+- 전체 백업: 매일 00:00
+- 증분 백업: 매시간
+- 보관 기간: 30일
+- 백업 위치: AWS S3
 
-### delivery_requests
-- `uk_delivery_request`: (delivery_request_number, delivery_request_change_order)
+### 모니터링
+- 연결 수
+- 쿼리 성능
+- 디스크 사용량
+- 복제 상태
 
-### delivery_request_items
-- `uk_delivery_request_item`: (delivery_request_id, product_id, sequence_number)
+### 성능 최적화
+- 쿼리 캐싱
+- 인덱스 최적화
+- 실행 계획 분석
+- 슬로우 쿼리 로깅
 
-## 외래 키 제약조건
-
-### product_categories
-- `fk_category_parent`: parent_id → product_categories.id
-
-### products
-- `fk_product_category`: category_id → product_categories.id
-
-### delivery_requests
-- `fk_delivery_request_contract`: contract_id → contracts.id
-- `fk_delivery_request_institution`: institution_id → institutions.id
-- `fk_delivery_request_company`: company_id → companies.id
-
-### delivery_request_items
-- `fk_delivery_request_item_request`: delivery_request_id → delivery_requests.id
-- `fk_delivery_request_item_product`: product_id → products.id
-
-## 인덱스
-
-### institutions
-- `idx_region`: (region_code, parent_region_code)
-- `idx_institution_name`: (institution_name)
-
-### delivery_requests
-- `idx_delivery_date`: (delivery_request_date)
-- `idx_excellent_product`: (is_excellent_product)
-- `idx_company`: (company_id)
-- `idx_institution`: (institution_id)
-
-### delivery_request_items
-- `idx_product`: (product_id)
-- `idx_excellent_product`: (is_excellent_product)
-
-## 문자셋 및 콜레이션
-모든 테이블은 다음 설정을 사용합니다:
-- 문자셋: utf8mb4
-- 콜레이션: utf8mb4_unicode_ci 
+### 유지보수
+- 통계 정보 갱신
+- 인덱스 재구성
+- 디스크 공간 관리
+- 로그 관리 
